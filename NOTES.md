@@ -56,12 +56,16 @@ from the same session.
 12. **Candles with no trades have null `price.*`.** Fallback to the
     bid/ask midpoint close for continuity (tested against fixture).
 
-## Data pulled (smoke scope: 1d bars only)
+## Data pulled
 
-| venue | catalog | bars (1440m) | markets with bars |
-|---|---|---|---|
-| polymarket | 100,509 closed, vol ≥ $100k | 49,218 | 298 |
-| kalshi | 1,009 (incl. 334 resolved multi-day) | 43,195 | 431 |
+| venue | catalog | 1d bars | 1d mkts | 1h bars | 1h mkts |
+|---|---|---|---|---|---|
+| polymarket | 100,509 closed, vol ≥ $100k | 49,218 | 298 | 162,696 | 24 |
+| kalshi | 103,797 (69,137 resolved multi-day) | 869,099 | 14,048 | 8,106,493 | 5,302 |
+
+The Kalshi catalog is the wide per-series scan of all 2,129
+annual/quarterly/monthly/weekly series over both tiers (2026-09-05); 1d bars
+cover all closed markets with volume ≥ $10k, 1h bars volume ≥ $50k.
 
 Sanity: all closes in [0,1] (0 violations), timestamps tz-aware UTC,
 resolved markets have final_price ∈ {0,1}.
@@ -97,39 +101,54 @@ resolved markets have final_price ∈ {0,1}.
   decaying — Polymarket shows *real* information-flow clustering on top of
   the local model, i.e. a layer-3 (SLV) effect worth fitting.
 
-### Kalshi (334 resolved multi-day markets)
+### Kalshi (12,731 resolved markets, wide universe)
 
-- **Test A slope = 3.627 (se 0.690)** — but this is a composition artefact:
-  310 of 334 markets are longshots (p0 < 0.05), where the budget is tiny
-  and the 1-cent tick floors realised variance far above it (bucket ratio
-  ≈ 103 in [0,0.05)). Outside the longshot bucket the sample is thin
-  (n = 1–9 per bucket), so the aggregate slope should not be read as a
-  venue-wide risk premium.
-- **Test B: Gaussian again wins** (slope 0.893 vs binomial 0.510), with
-  upward deviation in extreme buckets (ratio_gauss ≈ 12.8 at [0.95,1)) —
-  tick censoring + jumps, as flagged in THEORY.md §5.
-- **Diagnostics**: z-ACF lag-1 **−0.260** (strong bid-ask bounce — matches
-  the `--noise` sim signature almost exactly) and λ-ACF +0.315. Kalshi's
-  excess movement is substantially microstructure, not belief updating.
+An earlier 334-market smoke sample gave slope 3.627 dominated entirely by
+longshots; the wide universe supersedes it and separates the effects.
+
+- **Test A slope = 2.652 (se 0.087).** The longshot bucket is still
+  extreme (ratio ≈ 71 on n = 11,451: the 1-cent tick floors realised
+  variance far above a tiny budget), but the mid-p buckets are now well
+  populated (n = 99–338) and show ratios **1.75–2.68**: Kalshi carries
+  roughly 2x excess movement even away from the boundary. Against the sim
+  benchmarks (noise 0.02 → slope 1.80, z-ACF −0.28), a large share of this
+  is bid-ask bounce, but not obviously all of it.
+- **Test B: Gaussian again wins** (slope 0.866 vs binomial 0.489). The
+  striking pattern is the high-p tail: ratio_gauss 4.9 at [0.85,0.95) and
+  **21.5 at [0.95,1)** — near-favorites move far more than any diffusion
+  allows. Combined with excess kurtosis of 87 (and 5,911 in the longshot
+  bucket), resolution risk arrives as jumps.
+- **Diagnostics**: z-ACF lag-1 **−0.265** (strong bounce, matching the
+  `--noise` sim signature) and λ-ACF +0.230 decaying over ~5 lags (real
+  clustering). Kalshi's excess = microstructure bounce + jump arrivals on
+  top of a roughly Gaussian bulk.
 
 ### Cross-venue read
 
 Both venues reject the binomial p(1-p)/τ rate and are broadly consistent
 with the zero-parameter latent-Gaussian rate in the bulk, with more
 movement than it allows in the tails (jumps + tick bounce). Polymarket's
-excess movement looks partly informational (mild bounce, real λ
-clustering); Kalshi's is mostly microstructural (strong bounce, longshot
-tick censoring). Next steps that would sharpen this: intraday (1m/1h)
-backfill for bounce-vs-jump separation, and the strike-strip IV
-construction on Kalshi bracketed series (metadata already in the catalog).
+excess movement (slope 1.33) looks partly informational (mild bounce, real
+λ clustering); Kalshi's (2.65, ~2x even mid-range) mixes strong bid-ask
+bounce with jump-dominated resolution, most visible in near-favorites.
+1h bars are now on disk for both venues (8.1M Kalshi rows) for a proper
+bounce-vs-jump decomposition at the intraday scale; the other sharpening
+step is the strike-strip IV construction on Kalshi bracketed series
+(metadata already in the catalog).
 
 ## Unresolved
 
-- Kalshi complete settled universe: the smoke catalog scans a subset of
-  series; paging the global `/historical/markets` endpoint (no
-  series_ticker filter) would recover the full history.
-- 1m/1h backfills not run (deliberately out of smoke scope; heavy).
-- Kalshi non-longshot sample too thin for bucket-level inference; needs
-  the full historical universe above.
-- Repo is git-initialized with nothing committed (awaiting your call;
-  parent rsumplay repo is local-only).
+- **Global `/historical/markets` is a filterless firehose.** It ignores
+  every parameter except limit/cursor (min/max_close_ts, status, order all
+  silently no-ops), streams close_time-descending, and held ~5M+ rows at
+  the point we abandoned a full walk (4,900 pages ≈ 4.9M markets, mostly
+  minutes-lived sports shards). The wide per-series scan replaced it; the
+  daily/hourly/custom/one_off series remain unscanned (deliberately —
+  they are dominated by sub-day markets that produce no daily bars).
+- **Polymarket CLOB drops intraday history for old closed markets.** The
+  1h backfill returned data for only 24 of the top 300 markets; daily via
+  `interval=max` still works for all. Intraday analysis on Polymarket is
+  limited to recently-closed/live markets.
+- 1m backfills not run (very heavy; only worth it for case studies).
+- Analysis still runs on 1d bars only; the 1h panel (8.1M Kalshi rows) is
+  unexploited — intraday bounce-vs-jump decomposition is the next analysis.
