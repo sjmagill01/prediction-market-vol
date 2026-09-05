@@ -56,6 +56,21 @@ def test_stochvol_shows_in_lambda_acf_only():
     assert abs(acf["acf_z_signed"].iloc[0]) < 0.05  # no signed reversal
 
 
+def test_power_fit_recovers_clock_and_scale():
+    _, _, panel = _results()
+    pf = vc.power_fit(panel)
+    # probit truth: effective power between arcsin (1) and logit (2), clock ~ 1
+    assert 1.3 < pf["gamma"] < 2.0
+    assert 0.85 < pf["alpha"] < 1.15
+
+
+def test_power_fit_noise_flattens_state_dependence():
+    _, _, panel = _results(noise=0.02)
+    pf = vc.power_fit(panel)
+    assert pf["gamma"] < 1.0   # state-independent bounce drags gamma down
+    assert pf["alpha"] < 0.6
+
+
 def test_clean_acfs_are_flat():
     _, _, panel = _results()
     acf = vc.lambda_acf(panel)

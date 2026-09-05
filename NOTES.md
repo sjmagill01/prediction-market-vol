@@ -136,6 +136,53 @@ bounce-vs-jump decomposition at the intraday scale; the other sharpening
 step is the strike-strip IV construction on Kalshi bracketed series
 (metadata already in the catalog).
 
+### Power-family fit: the best [0,1] coordinate (see THEORY.md, transform view)
+
+`E[dp^2/dt] = c [p(1-p)]^gamma / tau^alpha` fitted on (p, tau) cell means:
+
+| sample | gamma | alpha | reading |
+|---|---|---|---|
+| sim clean (probit truth) | 1.64 | 1.02 | probit ~ effective power 1.6, clock recovered |
+| sim noise 0.02 | 0.68 | 0.32 | bounce flattens both exponents |
+| polymarket, all p | 1.84 | 0.61 | near-logit scale |
+| polymarket, bulk [.05,.95] | **1.95** | **0.84** | **log-odds Brownian, tau-scaled clock** |
+| kalshi, all p | 3.04 | 0.40 | longshot collapse: sub-logit boundary movement |
+| kalshi, bulk [.05,.95] | 0.35 | 0.51 | bounce-flattened (matches noise sim) |
+
+Polymarket's bulk is strikingly close to a logit-Brownian with a
+resolution-scaled clock: the best "custom-to-[0,1]" transform there is the
+log-odds. Kalshi's bulk fit is flattened exactly the way simulated additive
+noise flattens it -- a third, independent confirmation that Kalshi's excess
+is microstructural. The full-sample kalshi gamma = 3.0 says deep longshots
+move *less* than even logit scaling allows (dead markets + sub-tick moves
+that cannot print).
+
+### Intraday bounce-vs-jump decomposition (1h bars, analysis/intraday_decomp.py)
+
+Three independent instruments, pooled by p bucket.
+
+Kalshi (5,096 markets, 7.34M consecutive-hour increments):
+
+- **~half of hourly trade RV is bid-ask bounce**, and the two instruments
+  agree: quote-based (1 - RV_mid/RV_trade) 0.43-0.67 across buckets,
+  Roll (-2*gamma1/var) 0.29-0.77.
+- **Jumps carry 25-50% of quote-side variance in the bulk** (bipower on
+  midpoints, bounce-free) rising to 0.57-0.64 at the extremes: boundary
+  resolution arrives as gaps, not diffusion.
+- Signature ratio RV(1h)/RV(1d): median **3.5** (IQR 1.9-8.5). Hourly RV is
+  ~3.5x daily RV, i.e. bounce dominates at high frequency; the daily bars
+  used in vol_check are far less contaminated but not clean (daily z-ACF
+  -0.27).
+- 69% of hourly trade increments are exactly zero (tick grid + quiet hours).
+
+Polymarket (24 markets with hourly history -- indicative only):
+
+- No bid/ask on this venue, so only Roll + bipower apply. Roll bounce ~0 in
+  the bulk (+/-0.1 sampling noise), 0.67 in the longshot bucket (tick
+  rounding). Jump share is high (0.74 overall). Signature median 1.27.
+- Consistent with the daily story: Polymarket's excess movement is mostly
+  informational/jumpy, not bounce.
+
 ## Unresolved
 
 - **Global `/historical/markets` is a filterless firehose.** It ignores
@@ -150,5 +197,7 @@ step is the strike-strip IV construction on Kalshi bracketed series
   `interval=max` still works for all. Intraday analysis on Polymarket is
   limited to recently-closed/live markets.
 - 1m backfills not run (very heavy; only worth it for case studies).
-- Analysis still runs on 1d bars only; the 1h panel (8.1M Kalshi rows) is
-  unexploited — intraday bounce-vs-jump decomposition is the next analysis.
+- The intraday decomposition treats tick rounding as bounce (Roll picks up
+  negative autocovariance from the 1-cent grid itself); separating grid
+  effects from spread effects needs sub-tick quote data we don't have.
+- Strike-strip IV from Kalshi bracketed series: still the open construction.

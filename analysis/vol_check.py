@@ -269,6 +269,43 @@ def test_b_buckets(df: pd.DataFrame, slopes: dict) -> pd.DataFrame:
     return pd.DataFrame(rows)
 
 
+def power_fit(df: pd.DataFrame) -> dict:
+    """Fit E[dp^2/dt] = c * [p(1-p)]^gamma / tau^alpha on (p, tau) cell means.
+
+    This asks: what is the best "custom-to-[0,1]" coordinate? A local rate
+    [p(1-p)]^gamma corresponds to the variance-stabilising transform with
+    g'(p) = [p(1-p)]^(-gamma/2):
+      gamma = 1  ->  g = arcsin(2p-1)   (Wright-Fisher / binomial scale)
+      gamma = 2  ->  g = logit(p)       (log-odds Brownian motion)
+    and the probit/Gaussian rate phi(Phi^-1(p))^2 sits just above logit near
+    the boundary (~ p^2 * 2ln(1/p) as p -> 0). alpha is the resolution-clock
+    exponent: 1 = tau-scaled information flow, 0 = calendar time.
+
+    Weighted log-log WLS on binned cell means (binning kills the retained-mean
+    bias of regressing log dp^2 directly, since E[log chi^2] != log E[chi^2]).
+    """
+    p = df["p"].to_numpy()
+    pq = p * (1 - p)
+    y = (df["dp2"] / df["dt"]).to_numpy()
+    tau = df["tau"].to_numpy()
+    # cells: 14 quantile bins in pq x 6 log-spaced bins in tau
+    pq_bins = np.unique(np.quantile(pq, np.linspace(0, 1, 15)))
+    tau_bins = np.exp(np.linspace(np.log(tau.min()), np.log(tau.max() + 1), 7))
+    ci = np.searchsorted(pq_bins, pq, side="right") - 1
+    cj = np.searchsorted(tau_bins, tau, side="right") - 1
+    cell = pd.DataFrame({"ci": ci, "cj": cj, "y": y, "pq": pq, "tau": tau})
+    g = cell.groupby(["ci", "cj"]).agg(n=("y", "size"), my=("y", "mean"),
+                                       mpq=("pq", "mean"), mtau=("tau", "mean"))
+    g = g[(g["n"] >= 50) & (g["my"] > 0)]
+    if len(g) < 8:
+        return {"gamma": np.nan, "alpha": np.nan, "n_cells": len(g)}
+    X = np.column_stack([np.ones(len(g)), np.log(g["mpq"]), np.log(g["mtau"])])
+    w = np.sqrt(g["n"].to_numpy())
+    beta, *_ = np.linalg.lstsq(X * w[:, None], np.log(g["my"]) * w, rcond=None)
+    return {"gamma": float(beta[1]), "alpha": float(-beta[2]),
+            "c": float(np.exp(beta[0])), "n_cells": len(g)}
+
+
 # ------------------------------------------------------------------ diagnostics
 
 def kurtosis_table(df: pd.DataFrame) -> pd.DataFrame:
@@ -353,6 +390,13 @@ def run(mkts: list[Market], label: str, plot: bool = False) -> dict:
     print("\nmean dp^2 / mean candidate by p bucket (v_wf normalised by its slope; flat = good):")
     print(test_b_buckets(panel, b).to_string(index=False,
                                              float_format=lambda v: f"{v:.3f}"))
+
+    pf = power_fit(panel)
+    print("\n--- Power-family fit: E[dp^2/dt] = c * [p(1-p)]^gamma / tau^alpha")
+    print(f"  gamma = {pf['gamma']:.2f}  (1 = arcsin/binomial scale, 2 = logit; "
+          f"probit ~ just above 2 at the boundary)")
+    print(f"  alpha = {pf['alpha']:.2f}  (1 = resolution-clock scaled, 0 = calendar time)"
+          f"   [{pf['n_cells']} cells]")
 
     print("\n--- Diagnostics for a stochastic-vol third layer")
     print("excess kurtosis of dp/sqrt(v_gauss) by p bucket (jumps OR stochvol):")

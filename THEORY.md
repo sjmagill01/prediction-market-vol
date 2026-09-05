@@ -85,6 +85,46 @@ With tau = days to resolution:
    the *flatness* of its bucket ratios is testable. Comparing it to
    candidate 2 asks whether tau matters at all.
 
+### The transform view: which coordinate makes increments homoskedastic?
+
+Black-Scholes does not model prices directly; it picks the coordinate (log)
+in which increments are iid Gaussian. The same move is available on [0,1]:
+choose g so that y = g(p) has state-independent variance. By Ito, a local
+rate Var(dp) = f(p) dt is flattened by any g with g'(p) = f(p)^{-1/2}, so
+*choosing a transform and choosing a local-vol function are the same choice*:
+
+| local rate f(p) | flattening transform g |
+|---|---|
+| p(1-p) | arcsin(2p-1) (Wright-Fisher angular scale) |
+| p^2(1-p)^2 | logit(p) = log(p/(1-p)) |
+| phi(Phi^-1(p))^2 | probit(p) = Phi^-1(p) |
+
+Two cautions. First, the transform must stretch the boundaries to infinity:
+g' must blow up as p -> 0, 1, else the transformed process is still bounded
+and still forced to be heteroskedastic. arctan(p - 1/2) fails this test --
+its derivative is *finite* everywhere on [0,1] (arctan tames infinite
+domains, but [0,1] needs the opposite), so it is essentially a linear
+rescaling near the boundary and fixes nothing. logit and probit are the
+correct analogues of log. Second, g(p) is not a martingale even when p is
+(Jensen); like log-price under BS it acquires a state-dependent drift, so
+the transform is a variance-stabilising coordinate, not a new price.
+
+This suggests fitting the *power family*
+
+```
+E[dp^2/dt] = c * [p(1-p)]^gamma / tau^alpha
+```
+
+which nests the candidates (gamma=1, alpha=1: binomial; gamma=1, alpha=0:
+Wright-Fisher) and brackets the probit rate, whose boundary behaviour
+phi(Phi^-1(p))^2 ~ p^2 * 2ln(1/p) is "logit plus a log correction"
+(effective gamma ~ 1.6 over the sampled range in simulation, exactly what
+`power_fit` recovers with alpha = 1.02). The fitted gamma answers "which
+custom transform is best" directly: gamma-hat = 2 says log-odds Brownian
+motion, gamma-hat = 1 says angular scale. The fit is also a bounce
+detector: additive noise is state-*independent*, so it drags both
+exponents toward zero (simulated noise 0.02: gamma 0.68, alpha 0.32).
+
 The predicted failure pattern is diagnostic: if the Gaussian form fits the
 bulk but the extreme-p buckets show *more* movement than it allows, news is
 arriving as **jumps** (court rulings, poll releases) rather than continuous
