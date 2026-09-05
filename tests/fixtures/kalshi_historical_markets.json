@@ -1,0 +1,435 @@
+{
+ "cursor": "CgsIktir0gYQwLv8VBI5S1hNVkVTUE9SVFNNVUxUSUdBTUVFWFRFTkRFRC1TMjAyNjBFMzM1QUE2NUNDLUMyQTg5QUY1NDU3",
+ "markets": [
+  {
+   "can_close_early": true,
+   "close_time": "2026-07-05T23:54:20Z",
+   "created_time": "2026-07-05T23:44:43.279586Z",
+   "custom_strike": {
+    "Associated Events": "KXBTC15M-26JUL051945,KXDOGED-26JUL0520,KXETH15M-26JUL051945,KXMLBGAME-26JUL051630MIAATH,KXMLBGAME-26JUL052130BOSLAA,KXMLBTOTAL-26JUL051630MIAATH,KXSOL15M-26JUL051945,KXSOLD-26JUL0520,KXWCGAME-26JUL05MEXENG,KXWNBAGAME-26JUL05INDLV,KXXRP15M-26JUL051945,KXXRPD-26JUL0520",
+    "Associated Market Sides": "no,yes,no,yes,yes,yes,no,yes,yes,yes,no,yes",
+    "Associated Markets": "KXBTC15M-26JUL051945-45,KXDOGED-26JUL0520-T0.0000000,KXETH15M-26JUL051945-45,KXMLBGAME-26JUL051630MIAATH-MIA,KXMLBGAME-26JUL052130BOSLAA-BOS,KXMLBTOTAL-26JUL051630MIAATH-8,KXSOL15M-26JUL051945-45,KXSOLD-26JUL0520-T80.9999,KXWCGAME-26JUL05MEXENG-ENG,KXWNBAGAME-26JUL05INDLV-IND,KXXRP15M-26JUL051945-45,KXXRPD-26JUL0520-T1.1399",
+    "Multivariate Event Ticker": "KXMVESPORTSMULTIGAMEEXTENDED-S202654AAA503DF6"
+   },
+   "event_ticker": "KXMVESPORTSMULTIGAMEEXTENDED-S202654AAA503DF6",
+   "exchange_index": 0,
+   "expected_expiration_time": "2026-07-06T04:30:00Z",
+   "expiration_time": "2026-07-20T00:00:00Z",
+   "expiration_value": "",
+   "last_price_dollars": "0.0030",
+   "latest_expiration_time": "2026-07-20T00:00:00Z",
+   "liquidity_dollars": "0.0000",
+   "market_type": "binary",
+   "mve_collection_ticker": "KXMVESPORTSMULTIGAMEEXTENDED-R",
+   "mve_selected_legs": [
+    {
+     "event_ticker": "KXBTC15M-26JUL051945",
+     "market_ticker": "KXBTC15M-26JUL051945-45",
+     "side": "no"
+    },
+    {
+     "event_ticker": "KXDOGED-26JUL0520",
+     "market_ticker": "KXDOGED-26JUL0520-T0.0000000",
+     "side": "yes"
+    },
+    {
+     "event_ticker": "KXETH15M-26JUL051945",
+     "market_ticker": "KXETH15M-26JUL051945-45",
+     "side": "no"
+    },
+    {
+     "event_ticker": "KXMLBGAME-26JUL051630MIAATH",
+     "market_ticker": "KXMLBGAME-26JUL051630MIAATH-MIA",
+     "side": "yes"
+    },
+    {
+     "event_ticker": "KXMLBGAME-26JUL052130BOSLAA",
+     "market_ticker": "KXMLBGAME-26JUL052130BOSLAA-BOS",
+     "side": "yes"
+    },
+    {
+     "event_ticker": "KXMLBTOTAL-26JUL051630MIAATH",
+     "market_ticker": "KXMLBTOTAL-26JUL051630MIAATH-8",
+     "side": "yes"
+    },
+    {
+     "event_ticker": "KXSOL15M-26JUL051945",
+     "market_ticker": "KXSOL15M-26JUL051945-45",
+     "side": "no"
+    },
+    {
+     "event_ticker": "KXSOLD-26JUL0520",
+     "market_ticker": "KXSOLD-26JUL0520-T80.9999",
+     "side": "yes"
+    },
+    {
+     "event_ticker": "KXWCGAME-26JUL05MEXENG",
+     "market_ticker": "KXWCGAME-26JUL05MEXENG-ENG",
+     "side": "yes"
+    },
+    {
+     "event_ticker": "KXWNBAGAME-26JUL05INDLV",
+     "market_ticker": "KXWNBAGAME-26JUL05INDLV-IND",
+     "side": "yes"
+    },
+    {
+     "event_ticker": "KXXRP15M-26JUL051945",
+     "market_ticker": "KXXRP15M-26JUL051945-45",
+     "side": "no"
+    },
+    {
+     "event_ticker": "KXXRPD-26JUL0520",
+     "market_ticker": "KXXRPD-26JUL0520-T1.1399",
+     "side": "yes"
+    }
+   ],
+   "no_ask_dollars": "1.0000",
+   "no_bid_dollars": "0.0000",
+   "no_sub_title": "no Target Price: $63,657.98,yes $0.0000001 or above,no Target Price: $1,791.70,yes Miami,yes Boston,yes Over 7.5 runs scored,no Target Price: $81.6228,yes $81 or above,yes Reg Time: England,yes Indiana,no Target Price: $1.1574,yes $1.13991 or above",
+   "notional_value_dollars": "1.0000",
+   "open_interest_fp": "0.00",
+   "open_time": "2026-07-05T23:44:43Z",
+   "previous_price_dollars": "0.0000",
+   "previous_yes_ask_dollars": "0.0000",
+   "previous_yes_bid_dollars": "0.0000",
+   "price_level_structure": "deci_cent",
+   "price_ranges": [
+    {
+     "end": "1.0000",
+     "start": "0.0000",
+     "step": "0.0010"
+    }
+   ],
+   "result": "no",
+   "rules_primary": "",
+   "rules_secondary": "",
+   "settlement_timer_seconds": 5,
+   "settlement_ts": "2026-07-05T23:55:24.449669Z",
+   "settlement_value_dollars": "0.0000",
+   "status": "finalized",
+   "strike_type": "custom",
+   "ticker": "KXMVESPORTSMULTIGAMEEXTENDED-S202654AAA503DF6-F3908D2D165",
+   "title": "no Target Price: $63,657.98,yes $0.0000001 or above,no Target Price: $1,791.70,yes Miami,yes Boston,yes Over 7.5 runs scored,no Target Price: $81.6228,yes $81 or above,yes Reg Time: England,yes Indiana,no Target Price: $1.1574,yes $1.13991 or above",
+   "updated_time": "2026-07-05T23:55:24.481091Z",
+   "volume_24h_fp": "0.00",
+   "volume_fp": "1515.15",
+   "yes_ask_dollars": "1.0000",
+   "yes_ask_size_fp": "0.00",
+   "yes_bid_dollars": "0.0000",
+   "yes_bid_size_fp": "0.00",
+   "yes_sub_title": "no Target Price: $63,657.98,yes $0.0000001 or above,no Target Price: $1,791.70,yes Miami,yes Boston,yes Over 7.5 runs scored,no Target Price: $81.6228,yes $81 or above,yes Reg Time: England,yes Indiana,no Target Price: $1.1574,yes $1.13991 or above"
+  },
+  {
+   "can_close_early": true,
+   "close_time": "2026-07-05T23:45:00Z",
+   "created_time": "2026-07-05T23:44:02.465231Z",
+   "custom_strike": {
+    "Associated Events": "KXBTC15M-26JUL051945,KXSOL15M-26JUL051945,KXXRP15M-26JUL051945",
+    "Associated Market Sides": "yes,yes,yes",
+    "Associated Markets": "KXBTC15M-26JUL051945-45,KXSOL15M-26JUL051945-45,KXXRP15M-26JUL051945-45",
+    "Multivariate Event Ticker": "KXMVESPORTSMULTIGAMEEXTENDED-S20269266CEAEE69"
+   },
+   "event_ticker": "KXMVESPORTSMULTIGAMEEXTENDED-S20269266CEAEE69",
+   "exchange_index": 0,
+   "expected_expiration_time": "2026-07-05T23:50:00Z",
+   "expiration_time": "2026-07-05T23:45:00Z",
+   "expiration_value": "",
+   "last_price_dollars": "0.8800",
+   "latest_expiration_time": "2026-07-05T23:45:00Z",
+   "liquidity_dollars": "0.0000",
+   "market_type": "binary",
+   "mve_collection_ticker": "KXMVESPORTSMULTIGAMEEXTENDED-R",
+   "mve_selected_legs": [
+    {
+     "event_ticker": "KXBTC15M-26JUL051945",
+     "market_ticker": "KXBTC15M-26JUL051945-45",
+     "side": "yes"
+    },
+    {
+     "event_ticker": "KXSOL15M-26JUL051945",
+     "market_ticker": "KXSOL15M-26JUL051945-45",
+     "side": "yes"
+    },
+    {
+     "event_ticker": "KXXRP15M-26JUL051945",
+     "market_ticker": "KXXRP15M-26JUL051945-45",
+     "side": "yes"
+    }
+   ],
+   "no_ask_dollars": "1.0000",
+   "no_bid_dollars": "0.0000",
+   "no_sub_title": "yes Target Price: $63,657.98,yes Target Price: $81.6228,yes Target Price: $1.1574",
+   "notional_value_dollars": "1.0000",
+   "open_interest_fp": "0.00",
+   "open_time": "2026-07-05T23:44:02Z",
+   "previous_price_dollars": "0.0000",
+   "previous_yes_ask_dollars": "0.0000",
+   "previous_yes_bid_dollars": "0.0000",
+   "price_level_structure": "deci_cent",
+   "price_ranges": [
+    {
+     "end": "1.0000",
+     "start": "0.0000",
+     "step": "0.0010"
+    }
+   ],
+   "result": "yes",
+   "rules_primary": "",
+   "rules_secondary": "",
+   "settlement_timer_seconds": 5,
+   "settlement_ts": "2026-07-05T23:55:24.435899Z",
+   "settlement_value_dollars": "1.0000",
+   "status": "finalized",
+   "strike_type": "custom",
+   "ticker": "KXMVESPORTSMULTIGAMEEXTENDED-S20269266CEAEE69-B56F4EA20C6",
+   "title": "yes Target Price: $63,657.98,yes Target Price: $81.6228,yes Target Price: $1.1574",
+   "updated_time": "2026-07-05T23:55:24.481091Z",
+   "volume_24h_fp": "0.00",
+   "volume_fp": "7.88",
+   "yes_ask_dollars": "1.0000",
+   "yes_ask_size_fp": "0.00",
+   "yes_bid_dollars": "0.0000",
+   "yes_bid_size_fp": "0.00",
+   "yes_sub_title": "yes Target Price: $63,657.98,yes Target Price: $81.6228,yes Target Price: $1.1574"
+  },
+  {
+   "can_close_early": true,
+   "close_time": "2026-07-05T23:54:20Z",
+   "created_time": "2026-07-05T23:43:22.192558Z",
+   "custom_strike": {
+    "Associated Events": "KXBTC15M-26JUL051945,KXDOGE15M-26JUL051945,KXETH15M-26JUL051945,KXMLBGAME-26JUL051630MIAATH",
+    "Associated Market Sides": "no,no,no,yes",
+    "Associated Markets": "KXBTC15M-26JUL051945-45,KXDOGE15M-26JUL051945-45,KXETH15M-26JUL051945-45,KXMLBGAME-26JUL051630MIAATH-MIA",
+    "Multivariate Event Ticker": "KXMVESPORTSMULTIGAMEEXTENDED-S20261B756E4F151"
+   },
+   "event_ticker": "KXMVESPORTSMULTIGAMEEXTENDED-S20261B756E4F151",
+   "exchange_index": 0,
+   "expected_expiration_time": "2026-07-05T23:50:00Z",
+   "expiration_time": "2026-07-08T20:30:00Z",
+   "expiration_value": "",
+   "last_price_dollars": "0.3500",
+   "latest_expiration_time": "2026-07-08T20:30:00Z",
+   "liquidity_dollars": "0.0000",
+   "market_type": "binary",
+   "mve_collection_ticker": "KXMVESPORTSMULTIGAMEEXTENDED-R",
+   "mve_selected_legs": [
+    {
+     "event_ticker": "KXBTC15M-26JUL051945",
+     "market_ticker": "KXBTC15M-26JUL051945-45",
+     "side": "no"
+    },
+    {
+     "event_ticker": "KXDOGE15M-26JUL051945",
+     "market_ticker": "KXDOGE15M-26JUL051945-45",
+     "side": "no"
+    },
+    {
+     "event_ticker": "KXETH15M-26JUL051945",
+     "market_ticker": "KXETH15M-26JUL051945-45",
+     "side": "no"
+    },
+    {
+     "event_ticker": "KXMLBGAME-26JUL051630MIAATH",
+     "market_ticker": "KXMLBGAME-26JUL051630MIAATH-MIA",
+     "side": "yes"
+    }
+   ],
+   "no_ask_dollars": "1.0000",
+   "no_bid_dollars": "0.0000",
+   "no_sub_title": "no Target Price: $63,657.98,no Target Price: $0.0784490,no Target Price: $1,791.70,yes Miami",
+   "notional_value_dollars": "1.0000",
+   "open_interest_fp": "0.00",
+   "open_time": "2026-07-05T23:43:22Z",
+   "previous_price_dollars": "0.0000",
+   "previous_yes_ask_dollars": "0.0000",
+   "previous_yes_bid_dollars": "0.0000",
+   "price_level_structure": "deci_cent",
+   "price_ranges": [
+    {
+     "end": "1.0000",
+     "start": "0.0000",
+     "step": "0.0010"
+    }
+   ],
+   "result": "no",
+   "rules_primary": "",
+   "rules_secondary": "",
+   "settlement_timer_seconds": 5,
+   "settlement_ts": "2026-07-05T23:55:24.449752Z",
+   "settlement_value_dollars": "0.0000",
+   "status": "finalized",
+   "strike_type": "custom",
+   "ticker": "KXMVESPORTSMULTIGAMEEXTENDED-S20261B756E4F151-3B4E1ED2C91",
+   "title": "no Target Price: $63,657.98,no Target Price: $0.0784490,no Target Price: $1,791.70,yes Miami",
+   "updated_time": "2026-07-05T23:55:24.481091Z",
+   "volume_24h_fp": "0.00",
+   "volume_fp": "119.84",
+   "yes_ask_dollars": "1.0000",
+   "yes_ask_size_fp": "0.00",
+   "yes_bid_dollars": "0.0000",
+   "yes_bid_size_fp": "0.00",
+   "yes_sub_title": "no Target Price: $63,657.98,no Target Price: $0.0784490,no Target Price: $1,791.70,yes Miami"
+  },
+  {
+   "can_close_early": true,
+   "close_time": "2026-07-05T23:45:00Z",
+   "created_time": "2026-07-05T23:43:18.130732Z",
+   "custom_strike": {
+    "Associated Events": "KXBTC15M-26JUL051945,KXSOL15M-26JUL051945,KXXRP15M-26JUL051945",
+    "Associated Market Sides": "no,yes,no",
+    "Associated Markets": "KXBTC15M-26JUL051945-45,KXSOL15M-26JUL051945-45,KXXRP15M-26JUL051945-45",
+    "Multivariate Event Ticker": "KXMVESPORTSMULTIGAMEEXTENDED-S20269266CEAEE69"
+   },
+   "event_ticker": "KXMVESPORTSMULTIGAMEEXTENDED-S20269266CEAEE69",
+   "exchange_index": 0,
+   "expected_expiration_time": "2026-07-05T23:50:00Z",
+   "expiration_time": "2026-07-05T23:45:00Z",
+   "expiration_value": "",
+   "last_price_dollars": "0.2200",
+   "latest_expiration_time": "2026-07-05T23:45:00Z",
+   "liquidity_dollars": "0.0000",
+   "market_type": "binary",
+   "mve_collection_ticker": "KXMVESPORTSMULTIGAMEEXTENDED-R",
+   "mve_selected_legs": [
+    {
+     "event_ticker": "KXBTC15M-26JUL051945",
+     "market_ticker": "KXBTC15M-26JUL051945-45",
+     "side": "no"
+    },
+    {
+     "event_ticker": "KXSOL15M-26JUL051945",
+     "market_ticker": "KXSOL15M-26JUL051945-45",
+     "side": "yes"
+    },
+    {
+     "event_ticker": "KXXRP15M-26JUL051945",
+     "market_ticker": "KXXRP15M-26JUL051945-45",
+     "side": "no"
+    }
+   ],
+   "no_ask_dollars": "1.0000",
+   "no_bid_dollars": "0.0000",
+   "no_sub_title": "no Target Price: $63,657.98,yes Target Price: $81.6228,no Target Price: $1.1574",
+   "notional_value_dollars": "1.0000",
+   "open_interest_fp": "0.00",
+   "open_time": "2026-07-05T23:43:18Z",
+   "previous_price_dollars": "0.0000",
+   "previous_yes_ask_dollars": "0.0000",
+   "previous_yes_bid_dollars": "0.0000",
+   "price_level_structure": "deci_cent",
+   "price_ranges": [
+    {
+     "end": "1.0000",
+     "start": "0.0000",
+     "step": "0.0010"
+    }
+   ],
+   "result": "no",
+   "rules_primary": "",
+   "rules_secondary": "",
+   "settlement_timer_seconds": 5,
+   "settlement_ts": "2026-07-05T23:55:24.43557Z",
+   "settlement_value_dollars": "0.0000",
+   "status": "finalized",
+   "strike_type": "custom",
+   "ticker": "KXMVESPORTSMULTIGAMEEXTENDED-S20269266CEAEE69-D41329E5DE4",
+   "title": "no Target Price: $63,657.98,yes Target Price: $81.6228,no Target Price: $1.1574",
+   "updated_time": "2026-07-05T23:55:24.481091Z",
+   "volume_24h_fp": "0.00",
+   "volume_fp": "43.08",
+   "yes_ask_dollars": "1.0000",
+   "yes_ask_size_fp": "0.00",
+   "yes_bid_dollars": "0.0000",
+   "yes_bid_size_fp": "0.00",
+   "yes_sub_title": "no Target Price: $63,657.98,yes Target Price: $81.6228,no Target Price: $1.1574"
+  },
+  {
+   "can_close_early": true,
+   "close_time": "2026-07-05T23:54:20Z",
+   "created_time": "2026-07-05T23:43:14.1782Z",
+   "custom_strike": {
+    "Associated Events": "KXBTC15M-26JUL051945,KXDOGE15M-26JUL051945,KXETH15M-26JUL051945,KXMLBGAME-26JUL051630MIAATH,KXMLBGAME-26JUL051920SDLAD,KXWNBAGAME-26JUL05INDLV",
+    "Associated Market Sides": "no,no,no,yes,yes,yes",
+    "Associated Markets": "KXBTC15M-26JUL051945-45,KXDOGE15M-26JUL051945-45,KXETH15M-26JUL051945-45,KXMLBGAME-26JUL051630MIAATH-MIA,KXMLBGAME-26JUL051920SDLAD-LAD,KXWNBAGAME-26JUL05INDLV-IND",
+    "Multivariate Event Ticker": "KXMVESPORTSMULTIGAMEEXTENDED-S20260E335AA65CC"
+   },
+   "event_ticker": "KXMVESPORTSMULTIGAMEEXTENDED-S20260E335AA65CC",
+   "exchange_index": 0,
+   "expected_expiration_time": "2026-07-06T02:20:00Z",
+   "expiration_time": "2026-07-19T23:00:00Z",
+   "expiration_value": "",
+   "last_price_dollars": "0.0170",
+   "latest_expiration_time": "2026-07-19T23:00:00Z",
+   "liquidity_dollars": "0.0000",
+   "market_type": "binary",
+   "mve_collection_ticker": "KXMVESPORTSMULTIGAMEEXTENDED-R",
+   "mve_selected_legs": [
+    {
+     "event_ticker": "KXBTC15M-26JUL051945",
+     "market_ticker": "KXBTC15M-26JUL051945-45",
+     "side": "no"
+    },
+    {
+     "event_ticker": "KXDOGE15M-26JUL051945",
+     "market_ticker": "KXDOGE15M-26JUL051945-45",
+     "side": "no"
+    },
+    {
+     "event_ticker": "KXETH15M-26JUL051945",
+     "market_ticker": "KXETH15M-26JUL051945-45",
+     "side": "no"
+    },
+    {
+     "event_ticker": "KXMLBGAME-26JUL051630MIAATH",
+     "market_ticker": "KXMLBGAME-26JUL051630MIAATH-MIA",
+     "side": "yes"
+    },
+    {
+     "event_ticker": "KXMLBGAME-26JUL051920SDLAD",
+     "market_ticker": "KXMLBGAME-26JUL051920SDLAD-LAD",
+     "side": "yes"
+    },
+    {
+     "event_ticker": "KXWNBAGAME-26JUL05INDLV",
+     "market_ticker": "KXWNBAGAME-26JUL05INDLV-IND",
+     "side": "yes"
+    }
+   ],
+   "no_ask_dollars": "1.0000",
+   "no_bid_dollars": "0.0000",
+   "no_sub_title": "no Target Price: $63,657.98,no Target Price: $0.0784490,no Target Price: $1,791.70,yes Miami,yes Los Angeles D,yes Indiana",
+   "notional_value_dollars": "1.0000",
+   "open_interest_fp": "0.00",
+   "open_time": "2026-07-05T23:43:14Z",
+   "previous_price_dollars": "0.0000",
+   "previous_yes_ask_dollars": "0.0000",
+   "previous_yes_bid_dollars": "0.0000",
+   "price_level_structure": "deci_cent",
+   "price_ranges": [
+    {
+     "end": "1.0000",
+     "start": "0.0000",
+     "step": "0.0010"
+    }
+   ],
+   "result": "no",
+   "rules_primary": "",
+   "rules_secondary": "",
+   "settlement_timer_seconds": 5,
+   "settlement_ts": "2026-07-05T23:55:24.449872Z",
+   "settlement_value_dollars": "0.0000",
+   "status": "finalized",
+   "strike_type": "custom",
+   "ticker": "KXMVESPORTSMULTIGAMEEXTENDED-S20260E335AA65CC-C2A89AF5457",
+   "title": "no Target Price: $63,657.98,no Target Price: $0.0784490,no Target Price: $1,791.70,yes Miami,yes Los Angeles D,yes Indiana",
+   "updated_time": "2026-07-05T23:55:24.481091Z",
+   "volume_24h_fp": "0.00",
+   "volume_fp": "549.45",
+   "yes_ask_dollars": "1.0000",
+   "yes_ask_size_fp": "0.00",
+   "yes_bid_dollars": "0.0000",
+   "yes_bid_size_fp": "0.00",
+   "yes_sub_title": "no Target Price: $63,657.98,no Target Price: $0.0784490,no Target Price: $1,791.70,yes Miami,yes Los Angeles D,yes Indiana"
+  }
+ ]
+}

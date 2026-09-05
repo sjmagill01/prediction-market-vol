@@ -1,0 +1,795 @@
+{
+ "cursor": "CgsI9Pzt1AYQmJDVXhI2S1hNVkVDUk9TU0NBVEVHT1JZLVNIQVJEMS1TMjAyNkUzMzY3MDc1Mjk1LUZCQzQ0MTU1QjhC",
+ "markets": [
+  {
+   "can_close_early": true,
+   "close_time": "2026-09-05T02:36:34Z",
+   "created_time": "2026-09-05T02:30:13.929006Z",
+   "custom_strike": {
+    "Associated Events": "KXMLBGAME-26SEP041915DETCLEG2,KXMLBGAME-26SEP042005TBTEX,KXMLBGAME-26SEP042010AZHOU,KXMLBGAME-26SEP042010TORKC,KXMLBGAME-26SEP042040STLCOL,KXMLBGAME-26SEP042140NYYSD,KXMLBGAME-26SEP042210ATHSEA,KXMLBGAME-26SEP042210WSHLAD,KXMLBHR-26SEP041915DETCLEG2,KXMLBHR-26SEP041915DETCLEG2,KXMLBHR-26SEP041915DETCLEG2,KXMLBHR-26SEP042005TBTEX,KXMLBHR-26SEP042005TBTEX,KXMLBHR-26SEP042005TBTEX,KXMLBHR-26SEP042010AZHOU,KXMLBHR-26SEP042010AZHOU,KXMLBHR-26SEP042010AZHOU,KXMLBHR-26SEP042010TORKC,KXMLBHR-26SEP042010TORKC,KXMLBHR-26SEP042010TORKC,KXMLBHR-26SEP042040STLCOL,KXMLBHR-26SEP042040STLCOL,KXMLBHR-26SEP042040STLCOL,KXMLBHR-26SEP042140NYYSD,KXMLBHR-26SEP042140NYYSD,KXMLBHR-26SEP042140NYYSD,KXMLBHR-26SEP042210ATHSEA,KXMLBHR-26SEP042210ATHSEA,KXMLBHR-26SEP042210ATHSEA,KXMLBHR-26SEP042210WSHLAD,KXMLBHR-26SEP042210WSHLAD,KXMLBHR-26SEP042210WSHLAD,KXMLBHRR-26SEP041915DETCLEG2,KXMLBHRR-26SEP041915DETCLEG2,KXMLBHRR-26SEP042005TBTEX,KXMLBHRR-26SEP042005TBTEX,KXMLBHRR-26SEP042005TBTEX,KXMLBHRR-26SEP042010AZHOU,KXMLBHRR-26SEP042010AZHOU,KXMLBHRR-26SEP042010AZHOU,KXMLBHRR-26SEP042010TORKC,KXMLBHRR-26SEP042010TORKC,KXMLBHRR-26SEP042010TORKC,KXMLBHRR-26SEP042040STLCOL,KXMLBHRR-26SEP042040STLCOL,KXMLBHRR-26SEP042040STLCOL,KXMLBHRR-26SEP042140NYYSD,KXMLBHRR-26SEP042140NYYSD,KXMLBHRR-26SEP042140NYYSD,KXMLBHRR-26SEP042210ATHSEA,KXMLBHRR-26SEP042210WSHLAD,KXMLBHRR-26SEP042210WSHLAD,KXMLBKS-26SEP041915DETCLEG2,KXMLBKS-26SEP042005TBTEX,KXMLBKS-26SEP042010AZHOU,KXMLBKS-26SEP042010AZHOU,KXMLBKS-26SEP042010TORKC,KXMLBKS-26SEP042010TORKC,KXMLBKS-26SEP042040STLCOL,KXMLBKS-26SEP042040STLCOL,KXMLBKS-26SEP042140NYYSD,KXMLBKS-26SEP042140NYYSD,KXMLBKS-26SEP042210ATHSEA,KXMLBKS-26SEP042210ATHSEA,KXMLBKS-26SEP042210WSHLAD,KXMLBKS-26SEP042210WSHLAD",
+    "Associated Market Sides": "yes,yes,yes,yes,yes,yes,yes,yes,no,no,no,no,no,no,no,no,no,no,no,no,no,no,no,no,no,no,no,no,no,no,no,no,yes,yes,no,yes,no,yes,no,no,no,yes,no,yes,yes,yes,yes,yes,yes,yes,yes,yes,no,no,no,yes,no,no,no,no,no,no,yes,yes,yes,no",
+    "Associated Markets": "KXMLBGAME-26SEP041915DETCLEG2-CLE,KXMLBGAME-26SEP042005TBTEX-TB,KXMLBGAME-26SEP042010AZHOU-HOU,KXMLBGAME-26SEP042010TORKC-TOR,KXMLBGAME-26SEP042040STLCOL-STL,KXMLBGAME-26SEP042140NYYSD-NYY,KXMLBGAME-26SEP042210ATHSEA-SEA,KXMLBGAME-26SEP042210WSHLAD-LAD,KXMLBHR-26SEP041915DETCLEG2-CLEBROCCHIO4-2,KXMLBHR-26SEP041915DETCLEG2-CLEJADELL7-2,KXMLBHR-26SEP041915DETCLEG2-CLEJRAMREZ11-2,KXMLBHR-26SEP042005TBTEX-TBJARANDA8-2,KXMLBHR-26SEP042005TBTEX-TBJCAMINERO13-1,KXMLBHR-26SEP042005TBTEX-TEXBNIMMO24-1,KXMLBHR-26SEP042010AZHOU-AZKMARTE4-1,KXMLBHR-26SEP042010AZHOU-AZLNOOTBAAR21-1,KXMLBHR-26SEP042010AZHOU-HOUYALVAREZ44-1,KXMLBHR-26SEP042010TORKC-KCSPEREZ13-1,KXMLBHR-26SEP042010TORKC-KCVPASQUANTINO9-1,KXMLBHR-26SEP042010TORKC-TORGSPRINGER4-1,KXMLBHR-26SEP042040STLCOL-COLHGOODMAN15-1,KXMLBHR-26SEP042040STLCOL-STLABURLESON41-1,KXMLBHR-26SEP042040STLCOL-STLJWALKER18-1,KXMLBHR-26SEP042140NYYSD-NYYJCHISHOLM13-1,KXMLBHR-26SEP042140NYYSD-NYYLGARCA2-1,KXMLBHR-26SEP042140NYYSD-SDJMERRILL3-1,KXMLBHR-26SEP042210ATHSEA-SEACRALEIGH29-1,KXMLBHR-26SEP042210ATHSEA-SEADCANZONE8-1,KXMLBHR-26SEP042210ATHSEA-SEALMONTES99-1,KXMLBHR-26SEP042210WSHLAD-LADMBETTS50-1,KXMLBHR-26SEP042210WSHLAD-LADMMUNCY13-1,KXMLBHR-26SEP042210WSHLAD-LADTHERNANDEZ37-1,KXMLBHRR-26SEP041915DETCLEG2-CLEJADELL7-1,KXMLBHRR-26SEP041915DETCLEG2-CLEJRAMREZ11-2,KXMLBHRR-26SEP042005TBTEX-TBCMULLINS31-2,KXMLBHRR-26SEP042005TBTEX-TEXEDAZ35-1,KXMLBHRR-26SEP042005TBTEX-TEXJPEDERSON3-1,KXMLBHRR-26SEP042010AZHOU-AZMKEPLER22-1,KXMLBHRR-26SEP042010AZHOU-HOUDVARSHO5-1,KXMLBHRR-26SEP042010AZHOU-HOULWADE31-1,KXMLBHRR-26SEP042010TORKC-KCBWITT7-4,KXMLBHRR-26SEP042010TORKC-KCJCAGLIANONE14-2,KXMLBHRR-26SEP042010TORKC-TORCMCADOO26-2,KXMLBHRR-26SEP042040STLCOL-STLABURLESON41-3,KXMLBHRR-26SEP042040STLCOL-STLIHERRERA48-2,KXMLBHRR-26SEP042040STLCOL-STLJWALKER18-3,KXMLBHRR-26SEP042140NYYSD-NYYBRICE22-5,KXMLBHRR-26SEP042140NYYSD-NYYCBELLINGER35-1,KXMLBHRR-26SEP042140NYYSD-NYYSJONES78-1,KXMLBHRR-26SEP042210ATHSEA-ATHJMCNEIL22-2,KXMLBHRR-26SEP042210WSHLAD-WSHCABRAMS5-1,KXMLBHRR-26SEP042210WSHLAD-WSHJWOOD29-1,KXMLBKS-26SEP041915DETCLEG2-CLEFGRIFFIN22-4,KXMLBKS-26SEP042005TBTEX-TBNMARTINEZ28-5,KXMLBKS-26SEP042010AZHOU-AZMKELLY29-5,KXMLBKS-26SEP042010AZHOU-HOUCJAVIER53-2,KXMLBKS-26SEP042010TORKC-KCDLYNCH41-1,KXMLBKS-26SEP042010TORKC-TORJTAILLON50-2,KXMLBKS-26SEP042040STLCOL-COLRFELTNER18-6,KXMLBKS-26SEP042040STLCOL-STLAPALLANTE53-2,KXMLBKS-26SEP042140NYYSD-NYYMFRIED54-6,KXMLBKS-26SEP042140NYYSD-SDWBUEHLER10-8,KXMLBKS-26SEP042210ATHSEA-ATHKMORRIS67-3,KXMLBKS-26SEP042210ATHSEA-SEALGILBERT36-8,KXMLBKS-26SEP042210WSHLAD-LADBSNELL7-11,KXMLBKS-26SEP042210WSHLAD-WSHJKENT25-4",
+    "Multivariate Event Ticker": "KXMVECROSSCATEGORY-SHARD1-S20262EEA6AF47E7"
+   },
+   "event_ticker": "KXMVECROSSCATEGORY-SHARD1-S20262EEA6AF47E7",
+   "exchange_index": 1,
+   "expected_expiration_time": "2026-09-05T08:10:00Z",
+   "expiration_time": "2026-09-08T02:10:00Z",
+   "expiration_value": "",
+   "last_price_dollars": "0.0009",
+   "latest_expiration_time": "2026-09-08T02:10:00Z",
+   "liquidity_dollars": "0.0000",
+   "market_type": "binary",
+   "mve_collection_ticker": "KXMVECROSSCATEGORY-SHARD1-R",
+   "mve_selected_legs": [
+    {
+     "event_ticker": "KXMLBGAME-26SEP041915DETCLEG2",
+     "market_ticker": "KXMLBGAME-26SEP041915DETCLEG2-CLE",
+     "side": "yes"
+    },
+    {
+     "event_ticker": "KXMLBGAME-26SEP042005TBTEX",
+     "market_ticker": "KXMLBGAME-26SEP042005TBTEX-TB",
+     "side": "yes"
+    },
+    {
+     "event_ticker": "KXMLBGAME-26SEP042010AZHOU",
+     "market_ticker": "KXMLBGAME-26SEP042010AZHOU-HOU",
+     "side": "yes"
+    },
+    {
+     "event_ticker": "KXMLBGAME-26SEP042010TORKC",
+     "market_ticker": "KXMLBGAME-26SEP042010TORKC-TOR",
+     "side": "yes"
+    },
+    {
+     "event_ticker": "KXMLBGAME-26SEP042040STLCOL",
+     "market_ticker": "KXMLBGAME-26SEP042040STLCOL-STL",
+     "side": "yes"
+    },
+    {
+     "event_ticker": "KXMLBGAME-26SEP042140NYYSD",
+     "market_ticker": "KXMLBGAME-26SEP042140NYYSD-NYY",
+     "side": "yes"
+    },
+    {
+     "event_ticker": "KXMLBGAME-26SEP042210ATHSEA",
+     "market_ticker": "KXMLBGAME-26SEP042210ATHSEA-SEA",
+     "side": "yes"
+    },
+    {
+     "event_ticker": "KXMLBGAME-26SEP042210WSHLAD",
+     "market_ticker": "KXMLBGAME-26SEP042210WSHLAD-LAD",
+     "side": "yes"
+    },
+    {
+     "event_ticker": "KXMLBHR-26SEP041915DETCLEG2",
+     "market_ticker": "KXMLBHR-26SEP041915DETCLEG2-CLEBROCCHIO4-2",
+     "side": "no"
+    },
+    {
+     "event_ticker": "KXMLBHR-26SEP041915DETCLEG2",
+     "market_ticker": "KXMLBHR-26SEP041915DETCLEG2-CLEJADELL7-2",
+     "side": "no"
+    },
+    {
+     "event_ticker": "KXMLBHR-26SEP041915DETCLEG2",
+     "market_ticker": "KXMLBHR-26SEP041915DETCLEG2-CLEJRAMREZ11-2",
+     "side": "no"
+    },
+    {
+     "event_ticker": "KXMLBHR-26SEP042005TBTEX",
+     "market_ticker": "KXMLBHR-26SEP042005TBTEX-TBJARANDA8-2",
+     "side": "no"
+    },
+    {
+     "event_ticker": "KXMLBHR-26SEP042005TBTEX",
+     "market_ticker": "KXMLBHR-26SEP042005TBTEX-TBJCAMINERO13-1",
+     "side": "no"
+    },
+    {
+     "event_ticker": "KXMLBHR-26SEP042005TBTEX",
+     "market_ticker": "KXMLBHR-26SEP042005TBTEX-TEXBNIMMO24-1",
+     "side": "no"
+    },
+    {
+     "event_ticker": "KXMLBHR-26SEP042010AZHOU",
+     "market_ticker": "KXMLBHR-26SEP042010AZHOU-AZKMARTE4-1",
+     "side": "no"
+    },
+    {
+     "event_ticker": "KXMLBHR-26SEP042010AZHOU",
+     "market_ticker": "KXMLBHR-26SEP042010AZHOU-AZLNOOTBAAR21-1",
+     "side": "no"
+    },
+    {
+     "event_ticker": "KXMLBHR-26SEP042010AZHOU",
+     "market_ticker": "KXMLBHR-26SEP042010AZHOU-HOUYALVAREZ44-1",
+     "side": "no"
+    },
+    {
+     "event_ticker": "KXMLBHR-26SEP042010TORKC",
+     "market_ticker": "KXMLBHR-26SEP042010TORKC-KCSPEREZ13-1",
+     "side": "no"
+    },
+    {
+     "event_ticker": "KXMLBHR-26SEP042010TORKC",
+     "market_ticker": "KXMLBHR-26SEP042010TORKC-KCVPASQUANTINO9-1",
+     "side": "no"
+    },
+    {
+     "event_ticker": "KXMLBHR-26SEP042010TORKC",
+     "market_ticker": "KXMLBHR-26SEP042010TORKC-TORGSPRINGER4-1",
+     "side": "no"
+    },
+    {
+     "event_ticker": "KXMLBHR-26SEP042040STLCOL",
+     "market_ticker": "KXMLBHR-26SEP042040STLCOL-COLHGOODMAN15-1",
+     "side": "no"
+    },
+    {
+     "event_ticker": "KXMLBHR-26SEP042040STLCOL",
+     "market_ticker": "KXMLBHR-26SEP042040STLCOL-STLABURLESON41-1",
+     "side": "no"
+    },
+    {
+     "event_ticker": "KXMLBHR-26SEP042040STLCOL",
+     "market_ticker": "KXMLBHR-26SEP042040STLCOL-STLJWALKER18-1",
+     "side": "no"
+    },
+    {
+     "event_ticker": "KXMLBHR-26SEP042140NYYSD",
+     "market_ticker": "KXMLBHR-26SEP042140NYYSD-NYYJCHISHOLM13-1",
+     "side": "no"
+    },
+    {
+     "event_ticker": "KXMLBHR-26SEP042140NYYSD",
+     "market_ticker": "KXMLBHR-26SEP042140NYYSD-NYYLGARCA2-1",
+     "side": "no"
+    },
+    {
+     "event_ticker": "KXMLBHR-26SEP042140NYYSD",
+     "market_ticker": "KXMLBHR-26SEP042140NYYSD-SDJMERRILL3-1",
+     "side": "no"
+    },
+    {
+     "event_ticker": "KXMLBHR-26SEP042210ATHSEA",
+     "market_ticker": "KXMLBHR-26SEP042210ATHSEA-SEACRALEIGH29-1",
+     "side": "no"
+    },
+    {
+     "event_ticker": "KXMLBHR-26SEP042210ATHSEA",
+     "market_ticker": "KXMLBHR-26SEP042210ATHSEA-SEADCANZONE8-1",
+     "side": "no"
+    },
+    {
+     "event_ticker": "KXMLBHR-26SEP042210ATHSEA",
+     "market_ticker": "KXMLBHR-26SEP042210ATHSEA-SEALMONTES99-1",
+     "side": "no"
+    },
+    {
+     "event_ticker": "KXMLBHR-26SEP042210WSHLAD",
+     "market_ticker": "KXMLBHR-26SEP042210WSHLAD-LADMBETTS50-1",
+     "side": "no"
+    },
+    {
+     "event_ticker": "KXMLBHR-26SEP042210WSHLAD",
+     "market_ticker": "KXMLBHR-26SEP042210WSHLAD-LADMMUNCY13-1",
+     "side": "no"
+    },
+    {
+     "event_ticker": "KXMLBHR-26SEP042210WSHLAD",
+     "market_ticker": "KXMLBHR-26SEP042210WSHLAD-LADTHERNANDEZ37-1",
+     "side": "no"
+    },
+    {
+     "event_ticker": "KXMLBHRR-26SEP041915DETCLEG2",
+     "market_ticker": "KXMLBHRR-26SEP041915DETCLEG2-CLEJADELL7-1",
+     "side": "yes"
+    },
+    {
+     "event_ticker": "KXMLBHRR-26SEP041915DETCLEG2",
+     "market_ticker": "KXMLBHRR-26SEP041915DETCLEG2-CLEJRAMREZ11-2",
+     "side": "yes"
+    },
+    {
+     "event_ticker": "KXMLBHRR-26SEP042005TBTEX",
+     "market_ticker": "KXMLBHRR-26SEP042005TBTEX-TBCMULLINS31-2",
+     "side": "no"
+    },
+    {
+     "event_ticker": "KXMLBHRR-26SEP042005TBTEX",
+     "market_ticker": "KXMLBHRR-26SEP042005TBTEX-TEXEDAZ35-1",
+     "side": "yes"
+    },
+    {
+     "event_ticker": "KXMLBHRR-26SEP042005TBTEX",
+     "market_ticker": "KXMLBHRR-26SEP042005TBTEX-TEXJPEDERSON3-1",
+     "side": "no"
+    },
+    {
+     "event_ticker": "KXMLBHRR-26SEP042010AZHOU",
+     "market_ticker": "KXMLBHRR-26SEP042010AZHOU-AZMKEPLER22-1",
+     "side": "yes"
+    },
+    {
+     "event_ticker": "KXMLBHRR-26SEP042010AZHOU",
+     "market_ticker": "KXMLBHRR-26SEP042010AZHOU-HOUDVARSHO5-1",
+     "side": "no"
+    },
+    {
+     "event_ticker": "KXMLBHRR-26SEP042010AZHOU",
+     "market_ticker": "KXMLBHRR-26SEP042010AZHOU-HOULWADE31-1",
+     "side": "no"
+    },
+    {
+     "event_ticker": "KXMLBHRR-26SEP042010TORKC",
+     "market_ticker": "KXMLBHRR-26SEP042010TORKC-KCBWITT7-4",
+     "side": "no"
+    },
+    {
+     "event_ticker": "KXMLBHRR-26SEP042010TORKC",
+     "market_ticker": "KXMLBHRR-26SEP042010TORKC-KCJCAGLIANONE14-2",
+     "side": "yes"
+    },
+    {
+     "event_ticker": "KXMLBHRR-26SEP042010TORKC",
+     "market_ticker": "KXMLBHRR-26SEP042010TORKC-TORCMCADOO26-2",
+     "side": "no"
+    },
+    {
+     "event_ticker": "KXMLBHRR-26SEP042040STLCOL",
+     "market_ticker": "KXMLBHRR-26SEP042040STLCOL-STLABURLESON41-3",
+     "side": "yes"
+    },
+    {
+     "event_ticker": "KXMLBHRR-26SEP042040STLCOL",
+     "market_ticker": "KXMLBHRR-26SEP042040STLCOL-STLIHERRERA48-2",
+     "side": "yes"
+    },
+    {
+     "event_ticker": "KXMLBHRR-26SEP042040STLCOL",
+     "market_ticker": "KXMLBHRR-26SEP042040STLCOL-STLJWALKER18-3",
+     "side": "yes"
+    },
+    {
+     "event_ticker": "KXMLBHRR-26SEP042140NYYSD",
+     "market_ticker": "KXMLBHRR-26SEP042140NYYSD-NYYBRICE22-5",
+     "side": "yes"
+    },
+    {
+     "event_ticker": "KXMLBHRR-26SEP042140NYYSD",
+     "market_ticker": "KXMLBHRR-26SEP042140NYYSD-NYYCBELLINGER35-1",
+     "side": "yes"
+    },
+    {
+     "event_ticker": "KXMLBHRR-26SEP042140NYYSD",
+     "market_ticker": "KXMLBHRR-26SEP042140NYYSD-NYYSJONES78-1",
+     "side": "yes"
+    },
+    {
+     "event_ticker": "KXMLBHRR-26SEP042210ATHSEA",
+     "market_ticker": "KXMLBHRR-26SEP042210ATHSEA-ATHJMCNEIL22-2",
+     "side": "yes"
+    },
+    {
+     "event_ticker": "KXMLBHRR-26SEP042210WSHLAD",
+     "market_ticker": "KXMLBHRR-26SEP042210WSHLAD-WSHCABRAMS5-1",
+     "side": "yes"
+    },
+    {
+     "event_ticker": "KXMLBHRR-26SEP042210WSHLAD",
+     "market_ticker": "KXMLBHRR-26SEP042210WSHLAD-WSHJWOOD29-1",
+     "side": "yes"
+    },
+    {
+     "event_ticker": "KXMLBKS-26SEP041915DETCLEG2",
+     "market_ticker": "KXMLBKS-26SEP041915DETCLEG2-CLEFGRIFFIN22-4",
+     "side": "no"
+    },
+    {
+     "event_ticker": "KXMLBKS-26SEP042005TBTEX",
+     "market_ticker": "KXMLBKS-26SEP042005TBTEX-TBNMARTINEZ28-5",
+     "side": "no"
+    },
+    {
+     "event_ticker": "KXMLBKS-26SEP042010AZHOU",
+     "market_ticker": "KXMLBKS-26SEP042010AZHOU-AZMKELLY29-5",
+     "side": "no"
+    },
+    {
+     "event_ticker": "KXMLBKS-26SEP042010AZHOU",
+     "market_ticker": "KXMLBKS-26SEP042010AZHOU-HOUCJAVIER53-2",
+     "side": "yes"
+    },
+    {
+     "event_ticker": "KXMLBKS-26SEP042010TORKC",
+     "market_ticker": "KXMLBKS-26SEP042010TORKC-KCDLYNCH41-1",
+     "side": "no"
+    },
+    {
+     "event_ticker": "KXMLBKS-26SEP042010TORKC",
+     "market_ticker": "KXMLBKS-26SEP042010TORKC-TORJTAILLON50-2",
+     "side": "no"
+    },
+    {
+     "event_ticker": "KXMLBKS-26SEP042040STLCOL",
+     "market_ticker": "KXMLBKS-26SEP042040STLCOL-COLRFELTNER18-6",
+     "side": "no"
+    },
+    {
+     "event_ticker": "KXMLBKS-26SEP042040STLCOL",
+     "market_ticker": "KXMLBKS-26SEP042040STLCOL-STLAPALLANTE53-2",
+     "side": "no"
+    },
+    {
+     "event_ticker": "KXMLBKS-26SEP042140NYYSD",
+     "market_ticker": "KXMLBKS-26SEP042140NYYSD-NYYMFRIED54-6",
+     "side": "no"
+    },
+    {
+     "event_ticker": "KXMLBKS-26SEP042140NYYSD",
+     "market_ticker": "KXMLBKS-26SEP042140NYYSD-SDWBUEHLER10-8",
+     "side": "no"
+    },
+    {
+     "event_ticker": "KXMLBKS-26SEP042210ATHSEA",
+     "market_ticker": "KXMLBKS-26SEP042210ATHSEA-ATHKMORRIS67-3",
+     "side": "yes"
+    },
+    {
+     "event_ticker": "KXMLBKS-26SEP042210ATHSEA",
+     "market_ticker": "KXMLBKS-26SEP042210ATHSEA-SEALGILBERT36-8",
+     "side": "yes"
+    },
+    {
+     "event_ticker": "KXMLBKS-26SEP042210WSHLAD",
+     "market_ticker": "KXMLBKS-26SEP042210WSHLAD-LADBSNELL7-11",
+     "side": "yes"
+    },
+    {
+     "event_ticker": "KXMLBKS-26SEP042210WSHLAD",
+     "market_ticker": "KXMLBKS-26SEP042210WSHLAD-WSHJKENT25-4",
+     "side": "no"
+    }
+   ],
+   "no_ask_dollars": "1.0000",
+   "no_bid_dollars": "0.0000",
+   "no_sub_title": "yes Cleveland,yes Tampa Bay,yes Houston,yes Toronto,yes St. Louis,yes New York Y,yes Seattle,yes Los Angeles D,no Brayan Rocchio: 2+,no Jo Adell: 2+,no Jos\u00e9 Ram\u00edrez: 2+,no Jonathan Aranda: 2+,no Junior Caminero: 1+,no Brandon Nimmo: 1+,no Ketel Marte: 1+,no Lars Nootbaar: 1+,no Yordan Alvarez: 1+,no Salvador Perez: 1+,no Vinnie Pasquantino: 1+,no George Springer: 1+,no Hunter Goodman: 1+,no Alec Burleson: 1+,no Jordan Walker: 1+,no Jazz Chisholm Jr.: 1+,no Luis Garc\u00eda: 1+,no Jackson Merrill: 1+,no Cal Raleigh: 1+,no Dominic Canzone: 1+,no Lazaro Montes: 1+,no Mookie Betts: 1+,no Max Muncy (LAD): 1+,no Teoscar Hern\u00e1ndez: 1+,yes Jo Adell: 1+,yes Jos\u00e9 Ram\u00edrez: 2+,no Cedric Mullins: 2+,yes Elias D\u00edaz: 1+,no Joc Pederson: 1+,yes Max Kepler: 1+,no Daulton Varsho: 1+,no LaMonte Wade Jr.: 1+,no Bobby Witt Jr.: 4+,yes Jac Caglianone: 2+,no Charles McAdoo: 2+,yes Alec Burleson: 3+,yes Ivan Herrera: 2+,yes Jordan Walker: 3+,yes Ben Rice: 5+,yes Cody Bellinger: 1+,yes Spencer Jones: 1+,yes Jeff McNeil: 2+,yes CJ Abrams: 1+,yes James Wood: 1+,no Foster Griffin: 4+,no Nick Martinez: 5+,no Merrill Kelly: 5+,yes Cristian Javier: 2+,no Daniel Lynch: 1+,no Jameson Taillon: 2+,no Ryan Feltner: 6+,no Andre Pallante: 2+,no Max Fried: 6+,no Walker Buehler: 8+,yes Kade Morris: 3+,yes Logan Gilbert: 8+,yes Blake Snell: 11+,no Jackson Kent: 4+",
+   "notional_value_dollars": "1.0000",
+   "open_interest_fp": "10000.00",
+   "open_time": "2026-09-05T02:30:13Z",
+   "previous_price_dollars": "0.0000",
+   "previous_yes_ask_dollars": "0.0000",
+   "previous_yes_bid_dollars": "0.0000",
+   "price_level_structure": "center_deci_edge_centi_cent",
+   "price_ranges": [
+    {
+     "end": "0.0100",
+     "start": "0.0000",
+     "step": "0.0001"
+    },
+    {
+     "end": "0.9900",
+     "start": "0.0100",
+     "step": "0.0010"
+    },
+    {
+     "end": "1.0000",
+     "start": "0.9900",
+     "step": "0.0001"
+    }
+   ],
+   "result": "no",
+   "rules_primary": "",
+   "rules_secondary": "Kalshi is not affiliated, associated, authorized, endorsed by, or in any way officially connected with the Governing League. All trademarks, logos, and brand names are the property of their respective owners.",
+   "settlement_timer_seconds": 5,
+   "settlement_ts": "2026-09-05T02:36:45.485957Z",
+   "settlement_value_dollars": "0.0000",
+   "status": "finalized",
+   "strike_type": "custom",
+   "ticker": "KXMVECROSSCATEGORY-SHARD1-S20262EEA6AF47E7-ABD89C83E65",
+   "title": "yes Cleveland,yes Tampa Bay,yes Houston,yes Toronto,yes St. Louis,yes New York Y,yes Seattle,yes Los Angeles D,no Brayan Rocchio: 2+,no Jo Adell: 2+,no Jos\u00e9 Ram\u00edrez: 2+,no Jonathan Aranda: 2+,no Junior Caminero: 1+,no Brandon Nimmo: 1+,no Ketel Marte: 1+,no Lars Nootbaar: 1+,no Yordan Alvarez: 1+,no Salvador Perez: 1+,no Vinnie Pasquantino: 1+,no George Springer: 1+,no Hunter Goodman: 1+,no Alec Burleson: 1+,no Jordan Walker: 1+,no Jazz Chisholm Jr.: 1+,no Luis Garc\u00eda: 1+,no Jackson Merrill: 1+,no Cal Raleigh: 1+,no Dominic Canzone: 1+,no Lazaro Montes: 1+,no Mookie Betts: 1+,no Max Muncy (LAD): 1+,no Teoscar Hern\u00e1ndez: 1+,yes Jo Adell: 1+,yes Jos\u00e9 Ram\u00edrez: 2+,no Cedric Mullins: 2+,yes Elias D\u00edaz: 1+,no Joc Pederson: 1+,yes Max Kepler: 1+,no Daulton Varsho: 1+,no LaMonte Wade Jr.: 1+,no Bobby Witt Jr.: 4+,yes Jac Caglianone: 2+,no Charles McAdoo: 2+,yes Alec Burleson: 3+,yes Ivan Herrera: 2+,yes Jordan Walker: 3+,yes Ben Rice: 5+,yes Cody Bellinger: 1+,yes Spencer Jones: 1+,yes Jeff McNeil: 2+,yes CJ Abrams: 1+,yes James Wood: 1+,no Foster Griffin: 4+,no Nick Martinez: 5+,no Merrill Kelly: 5+,yes Cristian Javier: 2+,no Daniel Lynch: 1+,no Jameson Taillon: 2+,no Ryan Feltner: 6+,no Andre Pallante: 2+,no Max Fried: 6+,no Walker Buehler: 8+,yes Kade Morris: 3+,yes Logan Gilbert: 8+,yes Blake Snell: 11+,no Jackson Kent: 4+",
+   "updated_time": "2026-09-05T02:36:45.534412Z",
+   "volume_24h_fp": "0.00",
+   "volume_fp": "10000.00",
+   "yes_ask_dollars": "1.0000",
+   "yes_ask_size_fp": "0.00",
+   "yes_bid_dollars": "0.0000",
+   "yes_bid_size_fp": "0.00",
+   "yes_sub_title": "yes Cleveland,yes Tampa Bay,yes Houston,yes Toronto,yes St. Louis,yes New York Y,yes Seattle,yes Los Angeles D,no Brayan Rocchio: 2+,no Jo Adell: 2+,no Jos\u00e9 Ram\u00edrez: 2+,no Jonathan Aranda: 2+,no Junior Caminero: 1+,no Brandon Nimmo: 1+,no Ketel Marte: 1+,no Lars Nootbaar: 1+,no Yordan Alvarez: 1+,no Salvador Perez: 1+,no Vinnie Pasquantino: 1+,no George Springer: 1+,no Hunter Goodman: 1+,no Alec Burleson: 1+,no Jordan Walker: 1+,no Jazz Chisholm Jr.: 1+,no Luis Garc\u00eda: 1+,no Jackson Merrill: 1+,no Cal Raleigh: 1+,no Dominic Canzone: 1+,no Lazaro Montes: 1+,no Mookie Betts: 1+,no Max Muncy (LAD): 1+,no Teoscar Hern\u00e1ndez: 1+,yes Jo Adell: 1+,yes Jos\u00e9 Ram\u00edrez: 2+,no Cedric Mullins: 2+,yes Elias D\u00edaz: 1+,no Joc Pederson: 1+,yes Max Kepler: 1+,no Daulton Varsho: 1+,no LaMonte Wade Jr.: 1+,no Bobby Witt Jr.: 4+,yes Jac Caglianone: 2+,no Charles McAdoo: 2+,yes Alec Burleson: 3+,yes Ivan Herrera: 2+,yes Jordan Walker: 3+,yes Ben Rice: 5+,yes Cody Bellinger: 1+,yes Spencer Jones: 1+,yes Jeff McNeil: 2+,yes CJ Abrams: 1+,yes James Wood: 1+,no Foster Griffin: 4+,no Nick Martinez: 5+,no Merrill Kelly: 5+,yes Cristian Javier: 2+,no Daniel Lynch: 1+,no Jameson Taillon: 2+,no Ryan Feltner: 6+,no Andre Pallante: 2+,no Max Fried: 6+,no Walker Buehler: 8+,yes Kade Morris: 3+,yes Logan Gilbert: 8+,yes Blake Snell: 11+,no Jackson Kent: 4+"
+  },
+  {
+   "can_close_early": true,
+   "close_time": "2026-09-05T02:30:00Z",
+   "created_time": "2026-09-05T02:29:34.566075Z",
+   "custom_strike": {
+    "Associated Events": "KXDOGE15M-26SEP042230,KXGOLD15M-26SEP042230,KXWTI15M-26SEP042230",
+    "Associated Market Sides": "yes,yes,no",
+    "Associated Markets": "KXDOGE15M-26SEP042230-30,KXGOLD15M-26SEP042230-30,KXWTI15M-26SEP042230-30",
+    "Multivariate Event Ticker": "KXMVECROSSCATEGORY-SHARD1-S2026925978FF2D9"
+   },
+   "event_ticker": "KXMVECROSSCATEGORY-SHARD1-S2026925978FF2D9",
+   "exchange_index": 1,
+   "expected_expiration_time": "2026-09-05T08:15:00Z",
+   "expiration_time": "2026-09-05T02:30:00Z",
+   "expiration_value": "",
+   "last_price_dollars": "0.8950",
+   "latest_expiration_time": "2026-09-05T02:30:00Z",
+   "liquidity_dollars": "0.0000",
+   "market_type": "binary",
+   "mve_collection_ticker": "KXMVECROSSCATEGORY-SHARD1-R",
+   "mve_selected_legs": [
+    {
+     "event_ticker": "KXDOGE15M-26SEP042230",
+     "market_ticker": "KXDOGE15M-26SEP042230-30",
+     "side": "yes"
+    },
+    {
+     "event_ticker": "KXGOLD15M-26SEP042230",
+     "market_ticker": "KXGOLD15M-26SEP042230-30",
+     "side": "yes"
+    },
+    {
+     "event_ticker": "KXWTI15M-26SEP042230",
+     "market_ticker": "KXWTI15M-26SEP042230-30",
+     "side": "no"
+    }
+   ],
+   "no_ask_dollars": "1.0000",
+   "no_bid_dollars": "0.0000",
+   "no_sub_title": "yes Target Price: $0.0846784,yes Target Price: $4,436.46,no Target Price: $91.18",
+   "notional_value_dollars": "1.0000",
+   "open_interest_fp": "1.10",
+   "open_time": "2026-09-05T02:29:34Z",
+   "previous_price_dollars": "0.0000",
+   "previous_yes_ask_dollars": "0.0000",
+   "previous_yes_bid_dollars": "0.0000",
+   "price_level_structure": "center_deci_edge_centi_cent",
+   "price_ranges": [
+    {
+     "end": "0.0100",
+     "start": "0.0000",
+     "step": "0.0001"
+    },
+    {
+     "end": "0.9900",
+     "start": "0.0100",
+     "step": "0.0010"
+    },
+    {
+     "end": "1.0000",
+     "start": "0.9900",
+     "step": "0.0001"
+    }
+   ],
+   "result": "no",
+   "rules_primary": "",
+   "rules_secondary": "Kalshi is not affiliated, associated, authorized, endorsed by, or in any way officially connected with the Governing League. All trademarks, logos, and brand names are the property of their respective owners.",
+   "settlement_timer_seconds": 5,
+   "settlement_ts": "2026-09-05T02:30:45.549015Z",
+   "settlement_value_dollars": "0.0000",
+   "status": "finalized",
+   "strike_type": "custom",
+   "ticker": "KXMVECROSSCATEGORY-SHARD1-S2026925978FF2D9-59D4D186316",
+   "title": "yes Target Price: $0.0846784,yes Target Price: $4,436.46,no Target Price: $91.18",
+   "updated_time": "2026-09-05T02:30:45.634382Z",
+   "volume_24h_fp": "0.00",
+   "volume_fp": "1.10",
+   "yes_ask_dollars": "1.0000",
+   "yes_ask_size_fp": "0.00",
+   "yes_bid_dollars": "0.0000",
+   "yes_bid_size_fp": "0.00",
+   "yes_sub_title": "yes Target Price: $0.0846784,yes Target Price: $4,436.46,no Target Price: $91.18"
+  },
+  {
+   "can_close_early": true,
+   "close_time": "2026-09-05T02:30:00Z",
+   "created_time": "2026-09-05T02:29:32.044123Z",
+   "custom_strike": {
+    "Associated Events": "KXBTC15M-26SEP042230,KXDOGE15M-26SEP042230,KXETH15M-26SEP042230,KXGOLD15M-26SEP042230,KXHYPE15M-26SEP042230,KXXRP15M-26SEP042230",
+    "Associated Market Sides": "no,yes,no,no,no,no",
+    "Associated Markets": "KXBTC15M-26SEP042230-30,KXDOGE15M-26SEP042230-30,KXETH15M-26SEP042230-30,KXGOLD15M-26SEP042230-30,KXHYPE15M-26SEP042230-30,KXXRP15M-26SEP042230-30",
+    "Multivariate Event Ticker": "KXMVECROSSCATEGORY-SHARD1-S2026A2EDE155B3D"
+   },
+   "event_ticker": "KXMVECROSSCATEGORY-SHARD1-S2026A2EDE155B3D",
+   "exchange_index": 1,
+   "expected_expiration_time": "2026-09-05T08:15:00Z",
+   "expiration_time": "2026-09-05T02:30:00Z",
+   "expiration_value": "",
+   "last_price_dollars": "0.0210",
+   "latest_expiration_time": "2026-09-05T02:30:00Z",
+   "liquidity_dollars": "0.0000",
+   "market_type": "binary",
+   "mve_collection_ticker": "KXMVECROSSCATEGORY-SHARD1-R",
+   "mve_selected_legs": [
+    {
+     "event_ticker": "KXBTC15M-26SEP042230",
+     "market_ticker": "KXBTC15M-26SEP042230-30",
+     "side": "no"
+    },
+    {
+     "event_ticker": "KXDOGE15M-26SEP042230",
+     "market_ticker": "KXDOGE15M-26SEP042230-30",
+     "side": "yes"
+    },
+    {
+     "event_ticker": "KXETH15M-26SEP042230",
+     "market_ticker": "KXETH15M-26SEP042230-30",
+     "side": "no"
+    },
+    {
+     "event_ticker": "KXGOLD15M-26SEP042230",
+     "market_ticker": "KXGOLD15M-26SEP042230-30",
+     "side": "no"
+    },
+    {
+     "event_ticker": "KXHYPE15M-26SEP042230",
+     "market_ticker": "KXHYPE15M-26SEP042230-30",
+     "side": "no"
+    },
+    {
+     "event_ticker": "KXXRP15M-26SEP042230",
+     "market_ticker": "KXXRP15M-26SEP042230-30",
+     "side": "no"
+    }
+   ],
+   "no_ask_dollars": "1.0000",
+   "no_bid_dollars": "0.0000",
+   "no_sub_title": "no Target Price: $79,587.82,yes Target Price: $0.0846784,no Target Price: $2,452.58,no Target Price: $4,436.46,no Target Price: $84.1826,no Target Price: $1.3968",
+   "notional_value_dollars": "1.0000",
+   "open_interest_fp": "22.22",
+   "open_time": "2026-09-05T02:29:32Z",
+   "previous_price_dollars": "0.0000",
+   "previous_yes_ask_dollars": "0.0000",
+   "previous_yes_bid_dollars": "0.0000",
+   "price_level_structure": "center_deci_edge_centi_cent",
+   "price_ranges": [
+    {
+     "end": "0.0100",
+     "start": "0.0000",
+     "step": "0.0001"
+    },
+    {
+     "end": "0.9900",
+     "start": "0.0100",
+     "step": "0.0010"
+    },
+    {
+     "end": "1.0000",
+     "start": "0.9900",
+     "step": "0.0001"
+    }
+   ],
+   "result": "no",
+   "rules_primary": "",
+   "rules_secondary": "Kalshi is not affiliated, associated, authorized, endorsed by, or in any way officially connected with the Governing League. All trademarks, logos, and brand names are the property of their respective owners.",
+   "settlement_timer_seconds": 5,
+   "settlement_ts": "2026-09-05T02:30:45.548964Z",
+   "settlement_value_dollars": "0.0000",
+   "status": "finalized",
+   "strike_type": "custom",
+   "ticker": "KXMVECROSSCATEGORY-SHARD1-S2026A2EDE155B3D-B83A50D7747",
+   "title": "no Target Price: $79,587.82,yes Target Price: $0.0846784,no Target Price: $2,452.58,no Target Price: $4,436.46,no Target Price: $84.1826,no Target Price: $1.3968",
+   "updated_time": "2026-09-05T02:30:45.634382Z",
+   "volume_24h_fp": "0.00",
+   "volume_fp": "22.22",
+   "yes_ask_dollars": "1.0000",
+   "yes_ask_size_fp": "0.00",
+   "yes_bid_dollars": "0.0000",
+   "yes_bid_size_fp": "0.00",
+   "yes_sub_title": "no Target Price: $79,587.82,yes Target Price: $0.0846784,no Target Price: $2,452.58,no Target Price: $4,436.46,no Target Price: $84.1826,no Target Price: $1.3968"
+  },
+  {
+   "can_close_early": true,
+   "close_time": "2026-09-05T02:30:31Z",
+   "created_time": "2026-09-05T02:29:17.764761Z",
+   "custom_strike": {
+    "Associated Events": "KXBOXING-26SEP04JRKNYBA,KXBOXING-26SEP04JRWILLIA,KXCFLGAME-26SEP04BCMTL,KXGOLD15M-26SEP042230,KXITFDOUBLES-26SEP04ALIDAVCHAPER,KXITFMATCH-26SEP04BORBEC,KXMLBGAME-26SEP041915DETCLEG2,KXMLBGAME-26SEP042005TBTEX,KXMLBGAME-26SEP042010AZHOU,KXNCAAFGAME-26SEP04TOLMSU,KXNWSLGAME-26SEP04BAYKC,KXWTAMATCH-26SEP04SVIKAL,KXWTI15M-26SEP042230",
+    "Associated Market Sides": "yes,yes,yes,yes,yes,yes,yes,yes,yes,yes,yes,yes,no",
+    "Associated Markets": "KXBOXING-26SEP04JRKNYBA-JR,KXBOXING-26SEP04JRWILLIA-JR,KXCFLGAME-26SEP04BCMTL-MTL,KXGOLD15M-26SEP042230-30,KXITFDOUBLES-26SEP04ALIDAVCHAPER-CHAPER,KXITFMATCH-26SEP04BORBEC-BEC,KXMLBGAME-26SEP041915DETCLEG2-CLE,KXMLBGAME-26SEP042005TBTEX-TB,KXMLBGAME-26SEP042010AZHOU-HOU,KXNCAAFGAME-26SEP04TOLMSU-MSU,KXNWSLGAME-26SEP04BAYKC-KC,KXWTAMATCH-26SEP04SVIKAL-KAL,KXWTI15M-26SEP042230-30",
+    "Multivariate Event Ticker": "KXMVECROSSCATEGORY-SHARD1-S20261F8E334D37A"
+   },
+   "event_ticker": "KXMVECROSSCATEGORY-SHARD1-S20261F8E334D37A",
+   "exchange_index": 1,
+   "expected_expiration_time": "2026-09-05T08:15:00Z",
+   "expiration_time": "2026-09-19T02:00:00Z",
+   "expiration_value": "",
+   "last_price_dollars": "0.0740",
+   "latest_expiration_time": "2026-09-19T02:00:00Z",
+   "liquidity_dollars": "0.0000",
+   "market_type": "binary",
+   "mve_collection_ticker": "KXMVECROSSCATEGORY-SHARD1-R",
+   "mve_selected_legs": [
+    {
+     "event_ticker": "KXBOXING-26SEP04JRKNYBA",
+     "market_ticker": "KXBOXING-26SEP04JRKNYBA-JR",
+     "side": "yes"
+    },
+    {
+     "event_ticker": "KXBOXING-26SEP04JRWILLIA",
+     "market_ticker": "KXBOXING-26SEP04JRWILLIA-JR",
+     "side": "yes"
+    },
+    {
+     "event_ticker": "KXCFLGAME-26SEP04BCMTL",
+     "market_ticker": "KXCFLGAME-26SEP04BCMTL-MTL",
+     "side": "yes"
+    },
+    {
+     "event_ticker": "KXGOLD15M-26SEP042230",
+     "market_ticker": "KXGOLD15M-26SEP042230-30",
+     "side": "yes"
+    },
+    {
+     "event_ticker": "KXITFDOUBLES-26SEP04ALIDAVCHAPER",
+     "market_ticker": "KXITFDOUBLES-26SEP04ALIDAVCHAPER-CHAPER",
+     "side": "yes"
+    },
+    {
+     "event_ticker": "KXITFMATCH-26SEP04BORBEC",
+     "market_ticker": "KXITFMATCH-26SEP04BORBEC-BEC",
+     "side": "yes"
+    },
+    {
+     "event_ticker": "KXMLBGAME-26SEP041915DETCLEG2",
+     "market_ticker": "KXMLBGAME-26SEP041915DETCLEG2-CLE",
+     "side": "yes"
+    },
+    {
+     "event_ticker": "KXMLBGAME-26SEP042005TBTEX",
+     "market_ticker": "KXMLBGAME-26SEP042005TBTEX-TB",
+     "side": "yes"
+    },
+    {
+     "event_ticker": "KXMLBGAME-26SEP042010AZHOU",
+     "market_ticker": "KXMLBGAME-26SEP042010AZHOU-HOU",
+     "side": "yes"
+    },
+    {
+     "event_ticker": "KXNCAAFGAME-26SEP04TOLMSU",
+     "market_ticker": "KXNCAAFGAME-26SEP04TOLMSU-MSU",
+     "side": "yes"
+    },
+    {
+     "event_ticker": "KXNWSLGAME-26SEP04BAYKC",
+     "market_ticker": "KXNWSLGAME-26SEP04BAYKC-KC",
+     "side": "yes"
+    },
+    {
+     "event_ticker": "KXWTAMATCH-26SEP04SVIKAL",
+     "market_ticker": "KXWTAMATCH-26SEP04SVIKAL-KAL",
+     "side": "yes"
+    },
+    {
+     "event_ticker": "KXWTI15M-26SEP042230",
+     "market_ticker": "KXWTI15M-26SEP042230-30",
+     "side": "no"
+    }
+   ],
+   "no_ask_dollars": "1.0000",
+   "no_bid_dollars": "0.0000",
+   "no_sub_title": "yes Andy Ruiz Jr.,yes Vito Mielnicki Jr.,yes Montreal Alouettes,yes Target Price: $4,436.46,yes Chang / Perez Ramos,yes Isaac Becroft,yes Cleveland,yes Tampa Bay,yes Houston,yes Michigan St.,yes Kansas City,yes Anna Kalinskaya,no Target Price: $91.18",
+   "notional_value_dollars": "1.0000",
+   "open_interest_fp": "507.74",
+   "open_time": "2026-09-05T02:29:17Z",
+   "previous_price_dollars": "0.0000",
+   "previous_yes_ask_dollars": "0.0000",
+   "previous_yes_bid_dollars": "0.0000",
+   "price_level_structure": "center_deci_edge_centi_cent",
+   "price_ranges": [
+    {
+     "end": "0.0100",
+     "start": "0.0000",
+     "step": "0.0001"
+    },
+    {
+     "end": "0.9900",
+     "start": "0.0100",
+     "step": "0.0010"
+    },
+    {
+     "end": "1.0000",
+     "start": "0.9900",
+     "step": "0.0001"
+    }
+   ],
+   "result": "no",
+   "rules_primary": "",
+   "rules_secondary": "Kalshi is not affiliated, associated, authorized, endorsed by, or in any way officially connected with the Governing League. All trademarks, logos, and brand names are the property of their respective owners.",
+   "settlement_timer_seconds": 5,
+   "settlement_ts": "2026-09-05T02:30:45.548918Z",
+   "settlement_value_dollars": "0.0000",
+   "status": "finalized",
+   "strike_type": "custom",
+   "ticker": "KXMVECROSSCATEGORY-SHARD1-S20261F8E334D37A-947241DCA6B",
+   "title": "yes Andy Ruiz Jr.,yes Vito Mielnicki Jr.,yes Montreal Alouettes,yes Target Price: $4,436.46,yes Chang / Perez Ramos,yes Isaac Becroft,yes Cleveland,yes Tampa Bay,yes Houston,yes Michigan St.,yes Kansas City,yes Anna Kalinskaya,no Target Price: $91.18",
+   "updated_time": "2026-09-05T02:30:45.634382Z",
+   "volume_24h_fp": "0.00",
+   "volume_fp": "507.74",
+   "yes_ask_dollars": "1.0000",
+   "yes_ask_size_fp": "0.00",
+   "yes_bid_dollars": "0.0000",
+   "yes_bid_size_fp": "0.00",
+   "yes_sub_title": "yes Andy Ruiz Jr.,yes Vito Mielnicki Jr.,yes Montreal Alouettes,yes Target Price: $4,436.46,yes Chang / Perez Ramos,yes Isaac Becroft,yes Cleveland,yes Tampa Bay,yes Houston,yes Michigan St.,yes Kansas City,yes Anna Kalinskaya,no Target Price: $91.18"
+  },
+  {
+   "can_close_early": true,
+   "close_time": "2026-09-05T02:30:01Z",
+   "created_time": "2026-09-05T02:29:08.198527Z",
+   "custom_strike": {
+    "Associated Events": "KXDOGE15M-26SEP042230,KXMLBTOTAL-26SEP042005TBTEX",
+    "Associated Market Sides": "no,no",
+    "Associated Markets": "KXDOGE15M-26SEP042230-30,KXMLBTOTAL-26SEP042005TBTEX-13",
+    "Multivariate Event Ticker": "KXMVECROSSCATEGORY-SHARD1-S2026E3367075295"
+   },
+   "event_ticker": "KXMVECROSSCATEGORY-SHARD1-S2026E3367075295",
+   "exchange_index": 1,
+   "expected_expiration_time": "2026-09-05T06:05:00Z",
+   "expiration_time": "2026-09-08T00:05:00Z",
+   "expiration_value": "",
+   "last_price_dollars": "0.2990",
+   "latest_expiration_time": "2026-09-08T00:05:00Z",
+   "liquidity_dollars": "0.0000",
+   "market_type": "binary",
+   "mve_collection_ticker": "KXMVECROSSCATEGORY-SHARD1-R",
+   "mve_selected_legs": [
+    {
+     "event_ticker": "KXDOGE15M-26SEP042230",
+     "market_ticker": "KXDOGE15M-26SEP042230-30",
+     "side": "no"
+    },
+    {
+     "event_ticker": "KXMLBTOTAL-26SEP042005TBTEX",
+     "market_ticker": "KXMLBTOTAL-26SEP042005TBTEX-13",
+     "side": "no"
+    }
+   ],
+   "no_ask_dollars": "1.0000",
+   "no_bid_dollars": "0.0000",
+   "no_sub_title": "no Target Price: $0.0846784,no Over 12.5 runs scored",
+   "notional_value_dollars": "1.0000",
+   "open_interest_fp": "0.57",
+   "open_time": "2026-09-05T02:29:08Z",
+   "previous_price_dollars": "0.0000",
+   "previous_yes_ask_dollars": "0.0000",
+   "previous_yes_bid_dollars": "0.0000",
+   "price_level_structure": "center_deci_edge_centi_cent",
+   "price_ranges": [
+    {
+     "end": "0.0100",
+     "start": "0.0000",
+     "step": "0.0001"
+    },
+    {
+     "end": "0.9900",
+     "start": "0.0100",
+     "step": "0.0010"
+    },
+    {
+     "end": "1.0000",
+     "start": "0.9900",
+     "step": "0.0001"
+    }
+   ],
+   "result": "no",
+   "rules_primary": "",
+   "rules_secondary": "Kalshi is not affiliated, associated, authorized, endorsed by, or in any way officially connected with the Governing League. All trademarks, logos, and brand names are the property of their respective owners.",
+   "settlement_timer_seconds": 5,
+   "settlement_ts": "2026-09-05T02:30:15.495667Z",
+   "settlement_value_dollars": "0.0000",
+   "status": "finalized",
+   "strike_type": "custom",
+   "ticker": "KXMVECROSSCATEGORY-SHARD1-S2026E3367075295-FBC44155B8B",
+   "title": "no Target Price: $0.0846784,no Over 12.5 runs scored",
+   "updated_time": "2026-09-05T02:30:15.533809Z",
+   "volume_24h_fp": "0.00",
+   "volume_fp": "0.57",
+   "yes_ask_dollars": "1.0000",
+   "yes_ask_size_fp": "0.00",
+   "yes_bid_dollars": "0.0000",
+   "yes_bid_size_fp": "0.00",
+   "yes_sub_title": "no Target Price: $0.0846784,no Over 12.5 runs scored"
+  }
+ ]
+}

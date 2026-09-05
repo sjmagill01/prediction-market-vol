@@ -1,0 +1,54 @@
+{
+ "candlesticks": [
+  {
+   "end_period_ts": 1787803200,
+   "open_interest_fp": "2647.21",
+   "price": {
+    "close_dollars": "0.3700",
+    "high_dollars": "0.5300",
+    "low_dollars": "0.2900",
+    "mean_dollars": "0.4140",
+    "open_dollars": "0.3200"
+   },
+   "volume_fp": "4600.04",
+   "yes_ask": {
+    "close_dollars": "0.3600",
+    "high_dollars": "1.0000",
+    "low_dollars": "0.3100",
+    "open_dollars": "1.0000"
+   },
+   "yes_bid": {
+    "close_dollars": "0.3400",
+    "high_dollars": "0.5100",
+    "low_dollars": "0.0100",
+    "open_dollars": "0.0100"
+   }
+  },
+  {
+   "end_period_ts": 1787889600,
+   "open_interest_fp": "77344.43",
+   "price": {
+    "close_dollars": "0.9700",
+    "high_dollars": "0.9900",
+    "low_dollars": "0.0100",
+    "mean_dollars": "0.7461",
+    "open_dollars": "0.3400",
+    "previous_dollars": "0.3700"
+   },
+   "volume_fp": "244634.51",
+   "yes_ask": {
+    "close_dollars": "0.9900",
+    "high_dollars": "1.0000",
+    "low_dollars": "0.0100",
+    "open_dollars": "0.3600"
+   },
+   "yes_bid": {
+    "close_dollars": "0.9700",
+    "high_dollars": "0.9900",
+    "low_dollars": "0.0000",
+    "open_dollars": "0.3400"
+   }
+  }
+ ],
+ "ticker": "KXHIGHNY-26AUG27-T80"
+}
