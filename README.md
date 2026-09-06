@@ -54,12 +54,14 @@ where the excess lives).
 | venue | resolved markets | slope | reading |
 |---|---|---|---|
 | Polymarket | 290 | **1.33** | ~33% excess movement, mostly informational |
-| Kalshi | 12,731 | **2.41** | ~2x excess across all price buckets, mostly microstructural |
+| Kalshi | 12,731 | **2.41** | ~2-3x excess in the bulk, ~12x at extreme p, mostly microstructural |
 
 A calibrated simulator (latent-Gaussian truth with noise/staleness/stochvol
 knobs) provides the benchmarks: a clean martingale gives slope ~1.0, additive
-bid-ask noise of 2 cents alone pushes it to 1.8, and staleness leaves it
-unbiased. Kalshi's gap matches the noise signature (signed z-ACF lag-1 of
+bid-ask noise of 2 cents alone pushes it to 1.8 (the grey series in the
+figure), and staleness leaves it unbiased. Kalshi sits above the pure-bounce
+benchmark in every bucket, and the extreme-p buckets exceed what 2 cents of
+noise alone produces. Kalshi's gap matches the noise signature (signed z-ACF lag-1 of
 -0.27 vs -0.28 in the sim); Polymarket's does not (-0.09), so its excess is
 behavioral/informational, the Augenblick-Rabin excess-movement effect.
 
@@ -105,7 +107,7 @@ autocovariance, bipower variation on midpoints) decompose the walk:
 
 - Roughly **half of Kalshi's hourly trade-price variance is bid-ask bounce**;
   the signature ratio RV(1h)/RV(1d) has median 3.5.
-- **Jumps carry 36-69% of the bounce-free variance**, peaking in the
+- **Jumps carry 34-69% of the bounce-free variance**, peaking in the
   0.45-0.55 bucket: coin-flip markets move by discrete news arrivals, not
   diffusion. Excess kurtosis of standardised moves reaches several hundred
   near the boundaries; longshots sit still and then gap.
