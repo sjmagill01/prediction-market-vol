@@ -105,7 +105,7 @@ def test_market_row_fixture():
     assert row["closed"] is True
     assert row["series_ticker"] == "KXHIGHNY"
     assert row["volume"] > 0
-    # strike metadata kept for later implied-vol work
+    # strike metadata feeds the strike-strip IV construction (analysis/strike_strip.py)
     assert "cap_strike" in row and "strike_type" in row
 
 
