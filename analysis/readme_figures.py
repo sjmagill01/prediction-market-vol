@@ -115,6 +115,12 @@ def fig_state_dependence(data: dict) -> None:
         ax.plot(grid, match(gq ** pf["gamma"]), "r-",
                 lw=1.4, label=f"fit: $\\gamma$={pf['gamma']:.2f}, "
                               f"$\\alpha$={pf['alpha']:.2f}")
+        if venue == "polymarket":
+            j = cell["my"].idxmax()
+            ax.annotate("coin-flip jumps: 88 markets,\nno single market > 6% of the bin",
+                        xy=(cell.loc[j, "mp"], cell.loc[j, "my"]),
+                        xytext=(0.08, cell.loc[j, "my"] * 0.7), fontsize=7.5,
+                        arrowprops=dict(arrowstyle="-", lw=0.8, color="0.4"))
         ax.set_yscale("log")
         ax.set_xlabel("price p")
         ax.set_title(venue)

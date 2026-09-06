@@ -206,3 +206,8 @@ quarterly, monthly, and weekly series across both API tiers.
   no quotes); its intraday history survives only for recently closed markets.
 - Strike strips use daily closes across member markets, which need not be
   simultaneous; the total-probability gate catches gross staleness only.
+- Strip IV near resolution is inflated by the strike grid: measurable std is
+  floored by the bin width, so the late uptick in the term structure is
+  partly discretisation, not volatility.
+- Annual index strips have only 3 resolved events; the IQR band there is
+  spread across calendar years, not sampling error.
