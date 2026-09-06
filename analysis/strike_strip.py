@@ -21,7 +21,9 @@ Per event-day:
           points per sqrt-year (normal vol, the swaption convention).
 
 Built-in validation: S&P/Nasdaq annual strips should land near equity IV
-(~10-25%), WTI near oil vol (~30-40%); numbers far outside those ranges
+(~10-25%; observed 17%/13%), WTI near oil vol (observed 46%, rich vs ~35%
+OVX but the right order of magnitude), 10Y Treasury near swaption normal
+vol (~100bp/sqrt-yr; observed 100bp). Numbers far outside those ranges
 would indicate a broken construction.
 
 Excluded: running-extremum series (BTC max/min etc.) -- a max over a period

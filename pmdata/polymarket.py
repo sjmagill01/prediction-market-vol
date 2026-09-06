@@ -1,7 +1,9 @@
 """Polymarket adapter: Gamma (universe) + CLOB prices-history (bars).
 
-Universe: GET {GAMMA_BASE}/markets with limit/offset pagination, closed filter,
-volume_num_min filter, ordered by volumeNum desc. Gamma encodes clobTokenIds,
+Universe: GET {GAMMA_BASE}/markets ordered by volumeNum desc with
+volume-descending cursor pagination (volume_num_max = smallest volume seen;
+plain offsets 422 beyond ~2000), closed filter, volume_num_min filter.
+Gamma encodes clobTokenIds,
 outcomes and outcomePrices as JSON strings; parse defensively. We track the
 Yes outcome token only; key = that token id.
 

@@ -1,7 +1,8 @@
 """Generate the README figures into figures/.
 
 Usage: python analysis/readme_figures.py
-Heavy (loads both venues' daily panels and the Kalshi hourly panel).
+Heavy (loads both venues' daily panels, the Kalshi hourly panel, and the
+strike strips).
 """
 from __future__ import annotations
 
