@@ -120,8 +120,12 @@ def fit_garch(train, max_obs: int, seed: int) -> dict:
     return {"w": float(w), "a": float(a), "b": float(b)}
 
 
-def fit_all(train, venue: str, unit: float, max_obs: int, seed: int) -> dict:
-    """All training-side objects: regime map, SLV thetas, mixtures, buckets."""
+def fit_all(train, venue: str, unit: float, max_obs: int, seed: int,
+            lean: bool = False) -> dict:
+    """All training-side objects: regime map, SLV thetas, mixtures, buckets.
+
+    lean=True skips the global-SLV and GARCH fits (used by consumers like
+    budget_forecast.py that only need th_r1/th_clam + mixtures + buckets)."""
     panel = vc.candidate_rates(vc.daily_panel(train))
     cells = rm.classify(rm.build_cells(panel))
     rect = rm.r1_rectangle(cells)
@@ -145,10 +149,11 @@ def fit_all(train, venue: str, unit: float, max_obs: int, seed: int) -> dict:
 
     all_rect = {"p_lo": 0.0, "p_hi": 1.0, "tau_lo": 0.0}
     th_r1 = slv(rect, "full")
-    th_glob = slv(all_rect, "full")
+    th_glob = None if lean else slv(all_rect, "full")
     th_clam = slv(all_rect, "no-sv")
-    print(f"  theta R1={_fmt(th_r1)}\n  theta glob={_fmt(th_glob)}\n"
-          f"  theta clam={_fmt(th_clam)}")
+    print(f"  theta R1={_fmt(th_r1)}"
+          + ("" if lean else f"\n  theta glob={_fmt(th_glob)}")
+          + f"\n  theta clam={_fmt(th_clam)}")
 
     # per-cell tick mixtures (folded) + Gaussian bucket variances
     df = panel.copy()
@@ -162,9 +167,10 @@ def fit_all(train, venue: str, unit: float, max_obs: int, seed: int) -> dict:
         if len(g) >= MIN_CELL_FIT and regime.get((int(pi), int(ti)), 1) != 1:
             mix[(int(pi), int(ti))] = ih.fit_cell(g["k"].to_numpy())
     bucket["global"] = float(df["dp"].var())
-    garch = fit_garch(train, max_obs, seed)
-    print(f"  {len(mix)} cell mixtures, garch w={garch['w']:.2e} "
-          f"a={garch['a']:.3f} b={garch['b']:.3f}")
+    garch = None if lean else fit_garch(train, max_obs, seed)
+    print(f"  {len(mix)} cell mixtures"
+          + ("" if lean else f", garch w={garch['w']:.2e} "
+             f"a={garch['a']:.3f} b={garch['b']:.3f}"))
     return {"regime": regime, "th_r1": th_r1, "th_glob": th_glob,
             "th_clam": th_clam, "mix": mix, "bucket": bucket, "garch": garch}
 

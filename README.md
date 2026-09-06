@@ -140,12 +140,11 @@ quality gate that drops stale strips is what exposed the 100x scaling bug in
 Kalshi's historical bars (NOTES.md, API fix #13): an S&P strip that sums to
 0.011 instead of 1.000 is a very loud alarm.
 
-## Modeling the three regimes (preliminary; horse race pending)
+## Modeling the three regimes
 
-> Status: P0-P4 of the modeling phase are complete and oracle-gated
-> (each estimator is validated on simulated data with known parameters
-> before touching real data). The budget consistency check (P5) is in
-> progress.
+> All phases (P0-P5) of the modeling phase are complete and oracle-gated:
+> each estimator is validated on simulated data with known parameters
+> before touching real data.
 
 The diagnostics above say no single model covers the (p, tau) plane, so the
 modeling phase starts by partitioning it. A per-cell regime map (excess
@@ -233,6 +232,50 @@ Three findings:
    R2/R3 structure is real), but as *prediction* the SLV's intensity
    layer already spans it. The composite's randomised PIT on Kalshi is
    near-flat (deciles 0.083-0.110).
+
+### Does it integrate? The budget consistency check (budget_forecast.py)
+
+The horse race scores one-step densities; the budget identity constrains
+the whole remaining path: from any state, expected remaining variance
+(including the terminal resolution jump) must equal p(1-p). The check
+rolls the *fitted generative composite* forward by Monte Carlo from
+mid-life states (starts nearest tau = 30/14/7/3 days, p0 in [0.05, 0.95],
+200 paths each, R1 cells stepping the SLV probit walk with the log-lambda
+AR(1), R2/R3 cells sampling the fitted tick mixtures, terminal resolution
+contributing its exact p_T(1-p_T)) and compares simulated remaining
+variance to the budget, next to the realized continuation of the same
+markets. Ratio = remaining variance / p0(1-p0), ratio-of-sums over starts:
+
+| start | sim model | sim const-lam | sim real | PM model | PM const-lam | PM real | K model | K const-lam | K real |
+|---|---|---|---|---|---|---|---|---|---|
+| tau ~ 30d | 6.37 | 1.67 | 1.16 | 3.16 | 1.21 | 1.36 | 2.15 | 1.74 | 1.70 |
+| tau ~ 14d | 4.44 | 1.52 | 1.04 | 2.83 | 1.14 | 1.28 | 1.70 | 1.45 | 1.30 |
+| tau ~ 7d  | 3.08 | 1.37 | 0.94 | 2.50 | 1.11 | 1.08 | 1.50 | 1.30 | 1.24 |
+| tau ~ 3d  | 2.10 | 1.23 | 0.91 | 1.91 | 1.07 | 0.93 | 1.34 | 1.19 | 1.11 |
+
+1. **The checker is validated**: on simulated markets the realized ratio
+   is ~1 at every horizon, as the budget theorem requires.
+2. **Real markets overspend the budget from mid-life states too** (PM
+   1.36, Kalshi 1.70 at 30 days, decaying toward 1 as tau shrinks), the
+   conditional version of the lifetime excess-movement finding above.
+3. **The likelihood-optimal fit does not integrate.** The full SLV
+   composite overshoots the budget 2-6x, growing with horizon, while the
+   constant-lambda control (same MC, intensity frozen at its mean) lands
+   near the realized ratios; on Kalshi it nearly matches them. The
+   overspend is therefore specifically the fitted intensity tail: the
+   mixing spread pinned at its bound wins one-step likelihood (it is how
+   the Gaussian layer buys exact-zero days) but compounds into far too
+   much unconditional variance. One-step density and integrated dynamics
+   disagree, and this is the quantitative case for the zero-inflated
+   observation layer flagged in P1: stillness should be a point mass,
+   not a heavy intensity tail.
+4. **The variance flows through the right channel.** Splitting moves at
+   2 cents, model and realized agree that essentially all remaining
+   variance from these states rides the jump channel (shares 0.99+ both),
+   dominated by the terminal resolution jump.
+
+Caveat: the fits here are in-sample; this is a consistency audit of the
+fitted object, not a second forecast contest (that was P4).
 
 ## Setup
 

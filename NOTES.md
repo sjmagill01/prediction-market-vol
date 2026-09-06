@@ -233,6 +233,62 @@ annualised vol (VIX-consistent) and 10Y Treasury weekly strips imply
 forward-looking IV the lambda_imp construction cannot give, and it prices
 off order books alone -- no realised movement enters.
 
+### Modeling phase (P0-P5; regime_map / core_slv / itm_hazard / endgame / horse_race / budget_forecast)
+
+Every estimator was oracle-gated: run on the simulator with known
+parameters and required to recover them (or beat the right baselines)
+before touching venue data. Numbers below are the venue runs.
+
+- **P0 regime map**: per-cell classification on (price bucket, tau band)
+  using excess stillness beyond tick-censored diffusion, bipower jump
+  share, and kurtosis (R3 trigger kurt >= 30). Budget shares R1/R2/R3:
+  Polymarket 77/10/14, Kalshi 56/12/32. Largest all-R1 rectangles:
+  PM p in [0.15, 0.95) tau >= 14d; Kalshi p in [0.15, 0.85) tau >= 1d.
+  Raw still-fraction mislabels longshots (ticks censor real diffusion);
+  the *excess*-stillness statistic is what makes R2 meaningful. Kalshi's
+  dormant long-dated coin flips classify R2, not just boundary markets.
+- **P1 SLV state space** (IMM/collapsed-mixture Kalman, pooled theta =
+  (c, alpha, eta, phi, s)): stochastic vol is decisive on both venues
+  (dropping it costs 0.56-0.69 nats/obs, LR p ~ 0). PM theta =
+  (0.520, 1.338, 0.001, 0.763, 2.000) on 6,914 R1 steps; Kalshi =
+  (0.256, 1.143, 0.001, 0.792, 2.000) on 40,009 steps. Both pin s at the
+  2.0 bound and eta at the 1e-3 floor, and the PIT is center-humped:
+  more exact-zero days than the Gaussian layer can express (zero-inflated
+  observation layer flagged, not built).
+- **P2 ITM hazard** (P(k) = pi0 + diffusion + hazard * two-sided
+  geometric gap; |k| >= 2 needed for identification): near-boundary
+  near-expiry Kalshi cells show ~10%/day hazard of a ~24-cent gap with
+  w_away = 0.76 (jump-back-to-life). Dormant coin flips freeze the same
+  way (pi0 ~ 0.4) but gap symmetrically.
+- **P3 endgame** (E[dp^2] = arrival x size power laws in pq and tau,
+  tick-censoring de-censored by per-cell truncated discrete-normal MLE;
+  the oracle leaked without it): acceleration is size-driven on both
+  venues (b_size 0.30-0.38 vs b_arr ~ 0.07). The pq dependence lives in
+  size on PM (g = 2.09) and in arrival on Kalshi (g = 0.65). 21-27% of
+  lifetime variance is spent in the final 30 days; the terminal jump
+  alone carries 10-14%.
+- **P4 horse race** (walk-forward by resolution date, log P(k) on the
+  venue tick grid, block-bootstrap CIs): composite -2.489 (PM) / -2.140
+  (Kalshi); global SLV -6.760 / -2.119; GARCH -2.839 / -3.005; bucket
+  -3.391 / -3.129; const-lambda -3.872 / -2.672. Split verdict: the
+  regime split is essential on PM (a pooled SLV degenerates, c ~ 0 in
+  fold 1), while on Kalshi one global SLV edges the composite by 0.020
+  (CI excludes 0), won in the R2 cells: the pinned-s intensity mixture
+  imitates frozen-then-burst better than static per-cell tick mixtures.
+- **P5 budget consistency** (MC the fitted composite forward from starts
+  nearest tau = 30/14/7/3d, p0 in [0.05, 0.95], 200 paths; ratio =
+  remaining variance / p0(1-p0), ratio-of-sums): realized ratios are ~1
+  on the simulator at every horizon (checker validated) but 1.36 (PM) /
+  1.70 (Kalshi) at 30d on real data, decaying toward 1: the conditional
+  version of the lifetime excess-movement result. The full-SLV composite
+  overshoots the budget 2-6x growing with horizon (sim 6.37, PM 3.16,
+  K 2.15 at 30d) while the constant-lambda control lands near realized
+  (PM 1.21, K 1.74): the overspend is specifically the pinned-s intensity
+  tail, so the likelihood-optimal one-step density does not integrate to
+  budget-consistent dynamics. Jump-channel share of remaining variance
+  (|dp| >= 2c or terminal) is 0.99+ in both model and data. In-sample by
+  design: a consistency audit of the fitted object, not a second race.
+
 ## Unresolved
 
 - **Global `/historical/markets` is a filterless firehose.** It ignores
