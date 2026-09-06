@@ -142,11 +142,10 @@ Kalshi's historical bars (NOTES.md, API fix #13): an S&P strip that sums to
 
 ## Modeling the three regimes (preliminary; horse race pending)
 
-> Status: P0-P3 of the modeling phase are complete and oracle-gated
+> Status: P0-P4 of the modeling phase are complete and oracle-gated
 > (each estimator is validated on simulated data with known parameters
-> before touching real data). The composite out-of-sample horse race (P4)
-> and the strip cross-check (P5) are still running; numbers below are
-> subject to that confirmation.
+> before touching real data). The budget consistency check (P5) is in
+> progress.
 
 The diagnostics above say no single model covers the (p, tau) plane, so the
 modeling phase starts by partitioning it. A per-cell regime map (excess
@@ -198,6 +197,43 @@ Polymarket in move size, Kalshi in arrival frequency. Model-free spend
 profile: 21-27% of lifetime variance is spent in the final 30 days, and
 the terminal resolution jump alone carries 10-14%.
 
+### Does it predict? The out-of-sample horse race (horse_race.py)
+
+Walk-forward by resolution date (train on the first 50% then 75% of
+markets to resolve, test on the next 25% block), every model scored as
+log P(next tick move) on the venue tick grid, so continuous and discrete
+models compete in the same measure. Mean log score per observation
+(higher is better; deltas vs composite carry 95% block-bootstrap CIs
+over test markets, all excluding zero):
+
+| model | Polymarket (24.5k obs) | Kalshi (285k obs) |
+|---|---|---|
+| composite (regime-split) | **-2.489** | -2.140 |
+| global SLV (no regimes) | -6.760 | **-2.119** |
+| GARCH(1,1) on dp | -2.839 | -3.005 |
+| bucket (memorised cell variance) | -3.391 | -3.129 |
+| constant-lambda SLV | -3.872 | -2.672 |
+
+Three findings:
+
+1. **The SLV structure beats every off-the-shelf baseline out of
+   sample.** GARCH, the imported equity default, loses by 0.35 (PM) and
+   0.87 (Kalshi) nats per observation; it captures vol clustering but has
+   no level dependence and no resolution clock. That gap is the
+   quantitative price of ignoring the [0,1] geometry.
+2. **The regime split is essential on the small venue.** On Polymarket a
+   single SLV fit over all cells degenerates (the frozen and jumpy cells
+   poison the pooled fit) and loses catastrophically; the composite wins
+   in every regime.
+3. **On the large venue one SLV nearly suffices.** On Kalshi the global
+   SLV edges the composite by 0.020 nats/obs, won in the R2 cells: the
+   latent-intensity mixture, with its mixing spread pinned at the bound,
+   imitates frozen-then-burst dynamics better than static per-cell tick
+   mixtures. The regime map still earns its keep as measurement (the
+   R2/R3 structure is real), but as *prediction* the SLV's intensity
+   layer already spans it. The composite's randomised PIT on Kalshi is
+   near-flat (deciles 0.083-0.110).
+
 ## Setup
 
 ```bash
@@ -234,6 +270,8 @@ python analysis/regime_map.py --venue both         # P0: regime partition + figu
 python analysis/core_slv.py --venue both           # P1: R1 SLV state-space fit
 python analysis/itm_hazard.py --venue both         # P2: R2 frozen+gap mixture
 python analysis/endgame.py --venue both            # P3: arrival/size decomposition
+python analysis/horse_race.py --venue both         # P4: walk-forward horse race (heavy)
+python analysis/budget_forecast.py --venue both    # P5: budget consistency check
 
 # tests (parsers on captured fixtures + simulation-oracle analysis tests)
 python -m pytest tests -q
@@ -257,6 +295,9 @@ analysis/regime_map.py      P0: (p, tau) regime partition R1/R2/R3
 analysis/core_slv.py        P1: R1 stochastic-local-vol state space (IMM filter)
 analysis/itm_hazard.py      P2: R2 frozen + hazard-gap tick mixture
 analysis/endgame.py         P3: R3 arrival x size power-law decomposition
+analysis/horse_race.py      P4: walk-forward composite-vs-baselines race
+analysis/budget_forecast.py P5: MC remaining variance vs the p(1-p) budget
+results/                    horse-race + budget-check per-observation scores
 tests/                parser fixtures + sim-oracle tests
 figures/              README figures (readme_figures.py output)
 ```
