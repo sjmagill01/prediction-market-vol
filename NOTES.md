@@ -165,7 +165,7 @@ step is the strike-strip IV construction on Kalshi bracketed series
 | polymarket, all p | 1.84 | 0.61 | near-logit scale |
 | polymarket, bulk [.05,.95] | **1.95** | **0.84** | **log-odds Brownian, tau-scaled clock** |
 | kalshi, all p | 0.53 | 0.31 | bounce-flattened |
-| kalshi, bulk [.05,.95] | 0.88 | 0.44 | bounce-flattened (matches noise sim) |
+| kalshi, bulk [.05,.95] | 0.81 | 0.40 | bounce-flattened (matches noise sim) |
 
 Polymarket's bulk is strikingly close to a logit-Brownian with a
 resolution-scaled clock: the best "custom-to-[0,1]" transform there is the
