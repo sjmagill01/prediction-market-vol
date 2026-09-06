@@ -44,9 +44,10 @@ E[ sum_t dp_t^2 + (final - p_last)^2 ] = p0 (1 - p0)
 This is model-free: it holds under stochastic vol, jumps, staleness, any
 dynamics at all. `p(1-p)` is the market's own model-free implied integrated
 variance, the exact analog of a variance-swap strike, quoted by the price
-itself. Regressing realised lifetime variance on it is a realised-vs-implied
-comparison, and the slope minus one is a variance risk premium for prediction
-markets.
+itself. Comparing realised lifetime variance to it is a realised-vs-implied
+comparison; the figure plots the ratio of sums per starting-price bucket
+(a pooled slope compresses the same information into one number and hides
+where the excess lives).
 
 ![budget](figures/budget.png)
 
