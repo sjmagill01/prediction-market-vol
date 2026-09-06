@@ -55,6 +55,22 @@ from the same session.
     then recency, which yields multi-day price paths.
 12. **Candles with no trades have null `price.*`.** Fallback to the
     bid/ask midpoint close for continuity (tested against fixture).
+13. **Historical candlesticks return dollar STRINGS under legacy field
+    names.** `/historical/markets/{t}/candlesticks` ships
+    `price.close = "0.7200"` (no `_dollars` suffix), while the legacy
+    integer generation used the same names for cents. `_num(..., cents=True)`
+    divided the strings by 100, silently storing every historical-tier bar
+    100x too small -- 12,244 of 14,048 daily keys and 4,878 of 5,302 hourly
+    keys. Found 2026-09-05 when the KXINXY strike strip summed to 0.011
+    instead of 1. Fix: strings are always dollars; only integer legacy
+    fields are cents. Repair: in-place x100 on keys with max(close) <= 0.011
+    and sub-half-cent grid values (the two rules agree exactly with the
+    pre/post-cutoff split; 21 pre-cutoff keys with live-scale bars and 104
+    post-cutoff true dead longshots correctly left alone). Verified by
+    re-fetching 20 random keys with the fixed parser: all match the
+    repaired files bar-for-bar. Sub-penny prices are real on Kalshi
+    (the `_fp` generation exists for this), so grid fineness alone does
+    not imply mis-scaling.
 
 ## Data pulled
 
@@ -101,25 +117,27 @@ resolved markets have final_price ∈ {0,1}.
   decaying — Polymarket shows *real* information-flow clustering on top of
   the local model, i.e. a layer-3 (SLV) effect worth fitting.
 
-### Kalshi (12,731 resolved markets, wide universe)
+### Kalshi (12,731 resolved markets, wide universe, post scale-repair)
 
-An earlier 334-market smoke sample gave slope 3.627 dominated entirely by
-longshots; the wide universe supersedes it and separates the effects.
+Two earlier vintages are superseded: the 334-market smoke sample (slope
+3.627, all longshots) and the first wide-universe run (slope 2.652,
+longshot ratio 71), which was contaminated by the 100x historical-bar
+scaling bug (API fix #13) — most "longshots" were mis-scaled ordinary
+markets. Corrected numbers:
 
-- **Test A slope = 2.652 (se 0.087).** The longshot bucket is still
-  extreme (ratio ≈ 71 on n = 11,451: the 1-cent tick floors realised
-  variance far above a tiny budget), but the mid-p buckets are now well
-  populated (n = 99–338) and show ratios **1.75–2.68**: Kalshi carries
-  roughly 2x excess movement even away from the boundary. Against the sim
-  benchmarks (noise 0.02 → slope 1.80, z-ACF −0.28), a large share of this
-  is bid-ask bounce, but not obviously all of it.
-- **Test B: Gaussian again wins** (slope 0.866 vs binomial 0.489). The
-  striking pattern is the high-p tail: ratio_gauss 4.9 at [0.85,0.95) and
-  **21.5 at [0.95,1)** — near-favorites move far more than any diffusion
-  allows. Combined with excess kurtosis of 87 (and 5,911 in the longshot
-  bucket), resolution risk arrives as jumps.
-- **Diagnostics**: z-ACF lag-1 **−0.265** (strong bounce, matching the
-  `--noise` sim signature) and λ-ACF +0.230 decaying over ~5 lags (real
+- **Test A slope = 2.405 (se 0.031).** The bucket profile is now roughly
+  symmetric: mid-p buckets (n = 756–2,971) sit at ratios **1.99–2.57**,
+  with both extremes elevated (12.4 at [0,0.05), 11.7 at [0.95,1) —
+  tick-floored budgets). Kalshi carries ~2x excess movement across the
+  whole range. Against the sim benchmarks (noise 0.02 → slope 1.80,
+  z-ACF −0.28), a large share of this is bid-ask bounce, but not all.
+- **Test B: Gaussian again wins** (slope 0.710 vs binomial 0.403), flat-ish
+  ratios 1.2–2.9 in the bulk, blowing up only at the extremes (ratio_gauss
+  11.3 / 14.9) — boundary movement exceeds any diffusion. Excess kurtosis
+  14–58 in the bulk, 300–460 at the extremes: resolution risk arrives as
+  jumps.
+- **Diagnostics**: z-ACF lag-1 **−0.271** (strong bounce, matching the
+  `--noise` sim signature) and λ-ACF +0.180 decaying over ~5 lags (real
   clustering). Kalshi's excess = microstructure bounce + jump arrivals on
   top of a roughly Gaussian bulk.
 
@@ -146,33 +164,35 @@ step is the strike-strip IV construction on Kalshi bracketed series
 | sim noise 0.02 | 0.68 | 0.32 | bounce flattens both exponents |
 | polymarket, all p | 1.84 | 0.61 | near-logit scale |
 | polymarket, bulk [.05,.95] | **1.95** | **0.84** | **log-odds Brownian, tau-scaled clock** |
-| kalshi, all p | 3.04 | 0.40 | longshot collapse: sub-logit boundary movement |
-| kalshi, bulk [.05,.95] | 0.35 | 0.51 | bounce-flattened (matches noise sim) |
+| kalshi, all p | 0.53 | 0.31 | bounce-flattened |
+| kalshi, bulk [.05,.95] | 0.88 | 0.44 | bounce-flattened (matches noise sim) |
 
 Polymarket's bulk is strikingly close to a logit-Brownian with a
 resolution-scaled clock: the best "custom-to-[0,1]" transform there is the
-log-odds. Kalshi's bulk fit is flattened exactly the way simulated additive
-noise flattens it -- a third, independent confirmation that Kalshi's excess
-is microstructural. The full-sample kalshi gamma = 3.0 says deep longshots
-move *less* than even logit scaling allows (dead markets + sub-tick moves
-that cannot print).
+log-odds. Kalshi's fit is flattened exactly the way simulated additive
+noise flattens it (0.68/0.32) -- a third, independent confirmation that
+Kalshi's excess is microstructural. (A pre-repair vintage showed
+full-sample gamma = 3.0, a "longshot collapse" that was entirely the 100x
+scaling bug parking ordinary markets at p ~ 0.005.)
 
 ### Intraday bounce-vs-jump decomposition (1h bars, analysis/intraday_decomp.py)
 
 Three independent instruments, pooled by p bucket.
 
-Kalshi (5,096 markets, 7.34M consecutive-hour increments):
+Kalshi (5,096 markets, 7.34M consecutive-hour increments, post
+scale-repair):
 
 - **~half of hourly trade RV is bid-ask bounce**, and the two instruments
-  agree: quote-based (1 - RV_mid/RV_trade) 0.43-0.67 across buckets,
-  Roll (-2*gamma1/var) 0.29-0.77.
-- **Jumps carry 25-50% of quote-side variance in the bulk** (bipower on
-  midpoints, bounce-free) rising to 0.57-0.64 at the extremes: boundary
-  resolution arrives as gaps, not diffusion.
-- Signature ratio RV(1h)/RV(1d): median **3.5** (IQR 1.9-8.5). Hourly RV is
-  ~3.5x daily RV, i.e. bounce dominates at high frequency; the daily bars
-  used in vol_check are far less contaminated but not clean (daily z-ACF
-  -0.27).
+  agree: quote-based (1 - RV_mid/RV_trade) 0.32-0.58 in the bulk,
+  Roll (-2*gamma1/var) 0.28-0.66. The longshot bucket is the exception
+  (quote bounce 0.07): sub-penny prices leave little room for spread.
+- **Jumps carry 36-69% of quote-side variance** (bipower on midpoints,
+  bounce-free), peaking at 0.69 in the 0.45-0.55 bucket: coin-flip
+  markets move by discrete news arrivals.
+- Signature ratio RV(1h)/RV(1d): median **3.51** (IQR 1.9-8.5). Hourly RV
+  is ~3.5x daily RV, i.e. bounce dominates at high frequency; the daily
+  bars used in vol_check are far less contaminated but not clean (daily
+  z-ACF -0.27).
 - 69% of hourly trade increments are exactly zero (tick grid + quiet hours).
 
 Polymarket (24 markets with hourly history -- indicative only):
@@ -182,6 +202,37 @@ Polymarket (24 markets with hourly history -- indicative only):
   rounding). Jump share is high (0.74 overall). Signature median 1.27.
 - Consistent with the daily story: Polymarket's excess movement is mostly
   informational/jumpy, not bounce.
+
+### Strike-strip implied vol (analysis/strike_strip.py)
+
+Construction 3 from THEORY.md sec 4: bracketed Kalshi events are digital
+strips, so one event-day of member-market closes is a full risk-neutral
+distribution of the underlying; moments give a genuinely forward-looking
+IV. 'between' markets are disjoint bins plus greater/less tails; ladder
+events (all-'greater' chains) are survival functions differenced into
+bins. Days whose raw probabilities sum outside [0.7, 1.3] are dropped as
+stale/incomplete (this gate is what exposed the 100x bug); the rest are
+renormalised. Running-extremum series (BTC max/min) are excluded: a
+period max is not a terminal value.
+
+6,806 valid event-days, 179 events, 10 series (med total prob ~1.00):
+
+| series | kind | med IV | reading |
+|---|---|---|---|
+| KXINXY (S&P eoy) | prop | **0.167** | equity IV ~17%: lands on VIX-range |
+| KXNASDAQ100Y | prop | 0.132 | same ballpark |
+| KXWTIW (weekly) | prop | 0.464 | oil vol, slightly rich vs ~35% OVX |
+| KXAAAGASM / W | prop | 0.156 / 0.100 | retail gas: sticky, low vol |
+| KXTNOTEW (10Y) | norm | **1.003** | ~100bp/sqrt-yr: swaption normal-vol range |
+| KXCPIYOY / KXCPI | norm | 0.72 / 0.60 | inflation uncertainty in %-pts |
+| KXU3 | norm | 0.636 | unemployment %-pts |
+| KXPAYROLLS | norm | ~119k | jobs per sqrt-yr (monthly-change strips) |
+
+The two external anchors both validate: S&P annual strips imply ~17%
+annualised vol (VIX-consistent) and 10Y Treasury weekly strips imply
+~100bp normal vol (the swaption convention and level). This is the
+forward-looking IV the lambda_imp construction cannot give, and it prices
+off order books alone -- no realised movement enters.
 
 ## Unresolved
 
@@ -200,4 +251,6 @@ Polymarket (24 markets with hourly history -- indicative only):
 - The intraday decomposition treats tick rounding as bounce (Roll picks up
   negative autocovariance from the 1-cent grid itself); separating grid
   effects from spread effects needs sub-tick quote data we don't have.
-- Strike-strip IV from Kalshi bracketed series: still the open construction.
+- Strike-strip IV uses daily closes across member markets that need not be
+  simultaneous quotes; the total-prob gate catches gross staleness but a
+  same-timestamp order-book snapshot would be cleaner.

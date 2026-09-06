@@ -58,6 +58,9 @@ def _num(d: dict | None, name: str, cents: bool = False) -> float:
 
     New style: {name}_dollars ("0.9700") or {name}_fp ("249280.80") strings.
     Old style: integer field {name} (prices in cents when cents=True).
+    Historical-tier candlesticks: legacy field NAME but dollar STRING value
+    ("0.7200") -- observed live 2026-09-05; dividing that by 100 silently
+    scaled every historical bar down 100x. Strings are always dollars.
     """
     if not d:
         return math.nan
@@ -80,7 +83,7 @@ def _num(d: dict | None, name: str, cents: bool = False) -> float:
         x = float(v)
     except (TypeError, ValueError):
         return math.nan
-    return x / 100.0 if cents else x
+    return x / 100.0 if (cents and not isinstance(v, str)) else x
 
 
 def _ts(iso: str | None) -> pd.Timestamp | None:

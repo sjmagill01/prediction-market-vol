@@ -64,6 +64,14 @@ def test_num_old_generation_cents():
     assert kalshi._num({"volume": 1234}, "volume") == pytest.approx(1234.0)
 
 
+def test_num_historical_tier_dollar_strings():
+    # /historical/.../candlesticks: legacy field NAME, dollar STRING value.
+    # Dividing these by 100 scaled every historical bar down 100x (found
+    # 2026-09-05 when index strike strips summed to 0.01 instead of 1).
+    assert kalshi._num({"close": "0.7200"}, "close", cents=True) == pytest.approx(0.72)
+    assert kalshi._num({"close": "0.0050"}, "close", cents=True) == pytest.approx(0.005)
+
+
 def test_num_missing_is_nan():
     assert math.isnan(kalshi._num({}, "close"))
     assert math.isnan(kalshi._num(None, "close"))
