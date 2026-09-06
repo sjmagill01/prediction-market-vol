@@ -28,8 +28,10 @@ PM_MIN_VOLUME = 100_000
 PM_TOP_N = 4_000
 
 # Kalshi: wide per-series scan (annual/quarterly/monthly/weekly, both API
-# tiers), daily bars for closed markets with volume >= the floor.
+# tiers), daily bars for closed markets with volume >= the floor and a
+# lifetime long enough to produce at least two daily closes.
 KALSHI_MIN_VOLUME = 10_000
+KALSHI_MIN_LIFETIME_DAYS = 2.0
 
 # ------------------------------------------------------------------- grids
 # Venue tick units for the observation grids (PM quotes to 0.1 cent).

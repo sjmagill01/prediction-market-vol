@@ -19,7 +19,9 @@ import time
 
 def v1_data():
     """Fresh universe scans + daily backfills into data_v2/ (both venues)."""
-    raise NotImplementedError("V1: data pull not built yet")
+    import pull_v2
+    if pull_v2.main([]):
+        raise RuntimeError("V1 pull failed")
 
 
 def v2_empirics():
