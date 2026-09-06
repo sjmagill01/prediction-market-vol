@@ -204,7 +204,10 @@ CDF of the underlying, from which an implied distribution and a genuine
 forward-looking implied vol follow. The catalog deliberately stores
 `floor_strike`, `cap_strike`, `strike_type`, and `event_ticker` (Kalshi) and
 `event_id`/`event_slug` (Polymarket) so this construction is possible without
-re-pulling. Built-in validation: Kalshi S&P/BTC/rates brackets vs VIX/Deribit.
+re-pulling. Built-in validation: S&P brackets against VIX-range equity IV and
+Treasury brackets against swaption-style normal vol (see NOTES.md).
+Running-extremum series (BTC max/min over a period) are excluded: a running
+maximum is not a terminal value, so its distribution has no IV interpretation.
 
 ## 5. Honest limitations
 

@@ -102,7 +102,7 @@ resolved markets have final_price ∈ {0,1}.
 - `--stochvol`: λ-ACF **+0.278**, slowly decaying, with z-ACF ≈ 0 — the
   clean signature of genuine vol clustering.
 
-### Polymarket (298 resolved markets)
+### Polymarket (290 resolved markets; 298 have 1d bars, 8 lack a final price)
 
 - **Test A slope = 1.332 (robust se 0.096)**: ~33% more lifetime variance
   than the martingale budget — significant excess movement
@@ -147,12 +147,11 @@ Both venues reject the binomial p(1-p)/τ rate and are broadly consistent
 with the zero-parameter latent-Gaussian rate in the bulk, with more
 movement than it allows in the tails (jumps + tick bounce). Polymarket's
 excess movement (slope 1.33) looks partly informational (mild bounce, real
-λ clustering); Kalshi's (2.65, ~2x even mid-range) mixes strong bid-ask
+λ clustering); Kalshi's (2.41, ~2x even mid-range) mixes strong bid-ask
 bounce with jump-dominated resolution, most visible in near-favorites.
-1h bars are now on disk for both venues (8.1M Kalshi rows) for a proper
-bounce-vs-jump decomposition at the intraday scale; the other sharpening
-step is the strike-strip IV construction on Kalshi bracketed series
-(metadata already in the catalog).
+The two sharpening steps, both done below: the intraday bounce-vs-jump
+decomposition on the 1h bars, and the strike-strip IV construction on
+Kalshi bracketed series.
 
 ### Power-family fit: the best [0,1] coordinate (see THEORY.md, transform view)
 
@@ -186,7 +185,7 @@ scale-repair):
   agree: quote-based (1 - RV_mid/RV_trade) 0.32-0.58 in the bulk,
   Roll (-2*gamma1/var) 0.28-0.66. The longshot bucket is the exception
   (quote bounce 0.07): sub-penny prices leave little room for spread.
-- **Jumps carry 36-69% of quote-side variance** (bipower on midpoints,
+- **Jumps carry 34-69% of quote-side variance** (bipower on midpoints,
   bounce-free), peaking at 0.69 in the 0.45-0.55 bucket: coin-flip
   markets move by discrete news arrivals.
 - Signature ratio RV(1h)/RV(1d): median **3.51** (IQR 1.9-8.5). Hourly RV
