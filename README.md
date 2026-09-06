@@ -140,6 +140,64 @@ quality gate that drops stale strips is what exposed the 100x scaling bug in
 Kalshi's historical bars (NOTES.md, API fix #13): an S&P strip that sums to
 0.011 instead of 1.000 is a very loud alarm.
 
+## Modeling the three regimes (preliminary; horse race pending)
+
+> Status: P0-P3 of the modeling phase are complete and oracle-gated
+> (each estimator is validated on simulated data with known parameters
+> before touching real data). The composite out-of-sample horse race (P4)
+> and the strip cross-check (P5) are still running; numbers below are
+> subject to that confirmation.
+
+The diagnostics above say no single model covers the (p, tau) plane, so the
+modeling phase starts by partitioning it. A per-cell regime map (excess
+stillness beyond what tick-censored diffusion predicts, bipower jump share,
+kurtosis of standardised moves) classifies every (price bucket, tau band)
+cell into:
+
+- **R1 diffusive**: the SLV core, where the probit walk holds;
+- **R2 itm/hazard**: decided-but-not-resolved markets near a boundary (and
+  Kalshi's dormant long-dated coin flips): frozen prices punctuated by gaps;
+- **R3 jumpy**: the endgame, extreme kurtosis as tau -> 0.
+
+![regime map](figures/regime_map.png)
+
+| venue | R1 share of budget | R2 | R3 | R1 rectangle |
+|---|---|---|---|---|
+| Polymarket | 77% | 10% | 14% | p in [0.15, 0.95), tau >= 14d |
+| Kalshi | 56% | 12% | 32% | p in [0.15, 0.85), tau >= 1d |
+
+Each regime then gets its own oracle-gated model:
+
+**R1 (core_slv.py)**: a stochastic-local-vol state space,
+`Var(dp) = c * phi(Phi^-1(p))^2 * lambda_t / tau^alpha` with log lambda
+AR(1), fitted by a collapsed mixture (IMM) Kalman filter with pooled
+hyperparameters across markets. Dropping the stochastic-vol layer costs
+0.56-0.69 nats/obs on both venues (LR p ~ 0): information-flow clustering
+is the single most important ingredient. Honest flag: the fitted mixing
+sd pins at its bound and the observation noise at its floor, and the PIT
+histogram is center-humped: real R1 data has more exact-zero days than a
+Gaussian layer can express, pointing at a zero-inflated observation layer
+as the next refinement.
+
+**R2 (itm_hazard.py)**: the credit analogy. On the venue tick grid,
+`P(k) = pi0 * 1{k=0} + diffusion + hazard * gap(k)` with a two-sided
+geometric gap and separate decay for away- vs toward-boundary moves.
+Near-boundary near-expiry Kalshi cells show a ~10%/day hazard of a
+~24-cent gap with 76% of gap mass jumping *away* from the boundary:
+jump-back-to-life risk, the analogue of jump-to-default. Dormant coin
+flips freeze the same way (pi0 ~ 0.4) but gap symmetrically.
+
+**R3 (endgame.py)**: as tau -> 0 the budget forces the remaining
+p(1-p) to be spent. Decomposing E[dp^2] = arrival rate x squared gap size
+(with tick-censoring corrected by per-cell truncated MLE) shows the
+endgame acceleration is **size-driven on both venues**: the tau exponent
+sits almost entirely in the gap-size channel (b_size 0.30-0.38 vs
+b_arr ~ 0.07). Late-life variance blowup means bigger moves, not more
+frequent ones. The venues differ in where the p(1-p) dependence lives:
+Polymarket in move size, Kalshi in arrival frequency. Model-free spend
+profile: 21-27% of lifetime variance is spent in the final 30 days, and
+the terminal resolution jump alone carries 10-14%.
+
 ## Setup
 
 ```bash
@@ -171,6 +229,12 @@ python analysis/intraday_decomp.py --venue kalshi  # bounce vs jumps (1h bars)
 python analysis/strike_strip.py --plot             # strike-strip IV
 python analysis/readme_figures.py                  # regenerate figures/
 
+# 5. modeling phase (each supports --oracle to validate on simulated truth)
+python analysis/regime_map.py --venue both         # P0: regime partition + figure
+python analysis/core_slv.py --venue both           # P1: R1 SLV state-space fit
+python analysis/itm_hazard.py --venue both         # P2: R2 frozen+gap mixture
+python analysis/endgame.py --venue both            # P3: arrival/size decomposition
+
 # tests (parsers on captured fixtures + simulation-oracle analysis tests)
 python -m pytest tests -q
 ```
@@ -189,6 +253,10 @@ pmdata/cli.py         universe / backfill / update / sql
 analysis/vol_check.py       tests A/B, power fit, diagnostics, simulator
 analysis/intraday_decomp.py hourly bounce-vs-jump decomposition
 analysis/strike_strip.py    risk-neutral distributions from bracketed events
+analysis/regime_map.py      P0: (p, tau) regime partition R1/R2/R3
+analysis/core_slv.py        P1: R1 stochastic-local-vol state space (IMM filter)
+analysis/itm_hazard.py      P2: R2 frozen + hazard-gap tick mixture
+analysis/endgame.py         P3: R3 arrival x size power-law decomposition
 tests/                parser fixtures + sim-oracle tests
 figures/              README figures (readme_figures.py output)
 ```
