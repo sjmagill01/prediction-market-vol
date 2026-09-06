@@ -157,7 +157,11 @@ cell into:
   Kalshi's dormant long-dated coin flips): frozen prices punctuated by gaps;
 - **R3 jumpy**: the endgame, extreme kurtosis as tau -> 0.
 
-![regime map](figures/regime_map.png)
+![regime classification](figures/regime_classification.png)
+
+(The diagnostic panels behind the classification — excess stillness,
+bipower jump share, kurtosis per cell — are in
+[figures/regime_map.png](figures/regime_map.png).)
 
 | venue | R1 share of budget | R2 | R3 | R1 rectangle |
 |---|---|---|---|---|
@@ -201,9 +205,12 @@ the terminal resolution jump alone carries 10-14%.
 Walk-forward by resolution date (train on the first 50% then 75% of
 markets to resolve, test on the next 25% block), every model scored as
 log P(next tick move) on the venue tick grid, so continuous and discrete
-models compete in the same measure. Mean log score per observation
-(higher is better; deltas vs composite carry 95% block-bootstrap CIs
-over test markets, all excluding zero):
+models compete in the same measure.
+
+![horse race](figures/horse_race.png)
+
+Mean log score per observation (higher is better; deltas vs composite
+carry 95% block-bootstrap CIs over test markets, all excluding zero):
 
 | model | Polymarket (24.5k obs) | Kalshi (285k obs) |
 |---|---|---|
@@ -244,14 +251,9 @@ mid-life states (starts nearest tau = 30/14/7/3 days, p0 in [0.05, 0.95],
 AR(1), R2/R3 cells sampling the fitted tick mixtures, terminal resolution
 contributing its exact p_T(1-p_T)) and compares simulated remaining
 variance to the budget, next to the realized continuation of the same
-markets. Ratio = remaining variance / p0(1-p0), ratio-of-sums over starts:
+markets (full per-band numbers in NOTES.md; per-start rows in results/):
 
-| start | sim model | sim const-lam | sim real | PM model | PM const-lam | PM real | K model | K const-lam | K real |
-|---|---|---|---|---|---|---|---|---|---|
-| tau ~ 30d | 6.37 | 1.67 | 1.16 | 3.16 | 1.21 | 1.36 | 2.15 | 1.74 | 1.70 |
-| tau ~ 14d | 4.44 | 1.52 | 1.04 | 2.83 | 1.14 | 1.28 | 1.70 | 1.45 | 1.30 |
-| tau ~ 7d  | 3.08 | 1.37 | 0.94 | 2.50 | 1.11 | 1.08 | 1.50 | 1.30 | 1.24 |
-| tau ~ 3d  | 2.10 | 1.23 | 0.91 | 1.91 | 1.07 | 0.93 | 1.34 | 1.19 | 1.11 |
+![budget forecast](figures/budget_forecast.png)
 
 1. **The checker is validated**: on simulated markets the realized ratio
    is ~1 at every horizon, as the budget theorem requires.

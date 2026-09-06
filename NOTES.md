@@ -288,6 +288,14 @@ before touching venue data. Numbers below are the venue runs.
   budget-consistent dynamics. Jump-channel share of remaining variance
   (|dp| >= 2c or terminal) is 0.99+ in both model and data. In-sample by
   design: a consistency audit of the fitted object, not a second race.
+  Full per-band ratios (per-start rows in results/budget_forecast_*.csv):
+
+  | start | sim model | sim c-lam | sim real | PM model | PM c-lam | PM real | K model | K c-lam | K real |
+  |---|---|---|---|---|---|---|---|---|---|
+  | tau ~ 30d | 6.37 | 1.67 | 1.16 | 3.16 | 1.21 | 1.36 | 2.15 | 1.74 | 1.70 |
+  | tau ~ 14d | 4.44 | 1.52 | 1.04 | 2.83 | 1.14 | 1.28 | 1.70 | 1.45 | 1.30 |
+  | tau ~ 7d  | 3.08 | 1.37 | 0.94 | 2.50 | 1.11 | 1.08 | 1.50 | 1.30 | 1.24 |
+  | tau ~ 3d  | 2.10 | 1.23 | 0.91 | 1.91 | 1.07 | 0.93 | 1.34 | 1.19 | 1.11 |
 
 ## Unresolved
 
