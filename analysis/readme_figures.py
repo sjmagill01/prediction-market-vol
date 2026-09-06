@@ -53,11 +53,11 @@ def fig_budget(data: dict) -> None:
     paths with 2c of additive bid-ask noise.
     """
     rng = np.random.default_rng(7)
-    sim = vc.test_a(vc.simulate(600, noise=0.02, seed=7))
+    sim = vc.test_a(vc.simulate(5000, noise=0.02, seed=7))
     fig, ax = plt.subplots(figsize=(9.5, 5))
     series = [("polymarket", data["polymarket"][0], "C0", -0.15),
               ("kalshi", data["kalshi"][0], "C1", 0.0),
-              ("sim: clean walk + 2c bounce", sim, "0.55", 0.15)]
+              ("sim: clean walk + 2c bounce (5,000 paths)", sim, "0.55", 0.15)]
     labels = [vc._bucket_label(i) for i in range(len(vc.P_BUCKETS) - 1)]
     for name, a, color, off in series:
         rows = _bucket_ratios(a, rng)
@@ -65,7 +65,7 @@ def fig_budget(data: dict) -> None:
         y = np.array([r[1] for r in rows])
         lo = np.array([r[2] for r in rows])
         hi = np.array([r[3] for r in rows])
-        ax.errorbar(x, y, yerr=[y - lo, hi - y], fmt="o", ms=5, lw=1.2,
+        ax.errorbar(x, y, yerr=[y - lo, hi - y], fmt="o", ms=3.5, lw=1.2,
                     capsize=2.5, color=color, label=name)
     ax.axhline(1.0, color="k", ls="--", lw=1,
                label="martingale budget (exact for any dynamics)")
