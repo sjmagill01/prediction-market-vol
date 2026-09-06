@@ -176,10 +176,14 @@ def plot_map(maps: dict[str, pd.DataFrame], path: Path) -> None:
     import matplotlib.pyplot as plt
     from matplotlib.colors import ListedColormap, LogNorm
 
-    panels = [("excess_still", "excess stillness over diffusive prediction", None),
-              ("jump_share", "jump share (bipower)", None),
-              ("kurt_z", "excess kurtosis of z (log colour)", "log"),
-              ("regime", "regime (R1 diff / R2 itm / R3 jumpy)", "cat")]
+    panels = [("excess_still",
+               "frozen days beyond tick-censored diffusion\n"
+               f"(fraction; R2 trigger at >= {STILL_THRESH})", None),
+              ("jump_share", "share of variance carried by jumps\n(bipower)", None),
+              ("kurt_z",
+               "excess kurtosis of standardised moves\n"
+               f"(log colour; R3 trigger at >= {KURT_THRESH})", "log"),
+              ("regime", "regime classification", "cat")]
     nv = len(maps)
     fig, axes = plt.subplots(nv, 4, figsize=(16, 3.6 * nv), squeeze=False)
     p_labels = [vc._bucket_label(i) for i in range(len(vc.P_BUCKETS) - 1)]
@@ -200,14 +204,30 @@ def plot_map(maps: dict[str, pd.DataFrame], path: Path) -> None:
                                cmap="viridis", vmin=0, vmax=1)
             if kind != "cat":
                 fig.colorbar(im, ax=ax, shrink=0.85)
+            else:
+                from matplotlib.patches import Patch
+                ax.legend(handles=[
+                    Patch(color="#4c92c3", label="R1 diffusive (SLV core)"),
+                    Patch(color="#e1a63c", label="R2 frozen + gap hazard"),
+                    Patch(color="#c34c4c", label="R3 jumpy endgame")],
+                    loc="upper left", bbox_to_anchor=(1.02, 1.0), fontsize=7,
+                    frameon=False)
             ax.set_xticks(range(len(p_labels)), p_labels, rotation=45,
                           fontsize=6)
             ax.set_yticks(range(len(t_labels)), t_labels, fontsize=6)
             ax.set_title(f"{venue}: {title}", fontsize=9)
             if ci == 0:
-                ax.set_ylabel("tau band")
+                ax.set_ylabel("time to resolution (tau band)")
+            if vi == nv - 1:
+                ax.set_xlabel("price bucket", fontsize=8)
     fig.suptitle("Regime map: where the walk diffuses, freezes, and jumps",
                  y=1.0)
+    fig.text(0.01, -0.02,
+             "Each cell = one (price bucket, time-to-resolution) state, pooled over all markets. "
+             "White cells: fewer than "
+             f"{MIN_CELL} daily observations, left unclassified. Classification: R3 if excess kurtosis >= {KURT_THRESH}, "
+             f"then R2 if frozen-day excess >= {STILL_THRESH} (R2 takes precedence), else R1.",
+             fontsize=7, va="top")
     fig.tight_layout()
     fig.savefig(path, dpi=120, bbox_inches="tight")
     plt.close(fig)
