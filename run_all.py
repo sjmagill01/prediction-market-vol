@@ -33,7 +33,9 @@ def v2_empirics():
 
 def v3_regimes():
     """Regime map + per-regime models (SLV, itm-hazard, endgame)."""
-    raise NotImplementedError("V3: regime modeling not built yet")
+    from analysis import regimes_v3
+    if regimes_v3.main([]):
+        raise RuntimeError("V3 regimes failed")
 
 
 def v4_race():

@@ -1,0 +1,17 @@
+{
+ "n_cells": 54,
+ "budget_by_regime": {
+  "R1 diffusive": 0.8276367804204934,
+  "R2 itm/hazard": 0.0449813043761243,
+  "R3 jumpy": 0.1273819152033823
+ },
+ "rect": {
+  "p_lo": 0.3,
+  "p_hi": 0.85,
+  "tau_lo": 1.0
+ },
+ "thresholds": {
+  "still": 0.3,
+  "kurt": 30.0
+ }
+}
