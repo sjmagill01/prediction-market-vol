@@ -254,13 +254,16 @@ def slv_loglik(theta: dict, batches: list, collect: bool = False):
             act = k < L
             if not act.any():
                 break
-            # HMM node mixing, moment-matched collapse
-            W = w[:, :, None] * T[None, :, :]
-            wp = W.sum(1)
-            mix = W / (wp[:, None, :] + 1e-300)
-            mp = np.einsum("mij,mi->mj", mix, m)
-            dm = m[:, :, None] - mp[:, None, :]
-            Pp = np.einsum("mij,mij->mj", mix, P[:, :, None] + dm ** 2)
+            # HMM node mixing, moment-matched collapse. mix_ij = w_i T_ij
+            # / wp_j, so the collapsed moments are plain matmuls:
+            #   mp_j = sum_i mix_ij m_i          = (w m) T / wp
+            #   Pp_j = sum_i mix_ij (P_i + (m_i - mp_j)^2)
+            #        = (w (P + m^2)) T / wp - mp_j^2
+            # (K x K tensors per market replaced by three BLAS products).
+            wp = w @ T
+            inv = 1.0 / (wp + 1e-300)
+            mp = ((w * m) @ T) * inv
+            Pp = np.maximum(((w * (P + m * m)) @ T) * inv - mp ** 2, 0.0)
             # state predict with the actual (dt, tau), then Kalman update
             step = np.where(act, DT[:, k] / TP[:, k] ** alpha, 1.0)
             Pp = Pp + c * lam[None, :] * step[:, None]

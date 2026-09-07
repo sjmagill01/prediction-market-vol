@@ -40,7 +40,9 @@ def v3_regimes():
 
 def v4_race():
     """Horse race + budget integration + zero-inflated observation layer."""
-    raise NotImplementedError("V4: horse race not built yet")
+    from analysis import race_v4
+    if race_v4.main([]):
+        raise RuntimeError("V4 race failed")
 
 
 def v5_bridge():

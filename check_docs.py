@@ -119,6 +119,56 @@ CLAIMS += [
           _jscalar("endgame_kalshi.json", ("total", "g")), 0.556, 0.0005),
 ]
 
+# ---- V4 zero-inflated layer + horse race + budget (analysis/race_v4.py,
+# run 2026-09-07). zi variants list order: [zi, zi-off]. race models list
+# order: [composite-zi, composite, global-slv, const-lam, bucket, garch].
+CLAIMS += [
+    # s unpins on both venues once the observation lives on the tick grid;
+    # PM via staleness mass, Kalshi via tick censoring alone.
+    Claim("V4 PM zi s interior",
+          _jscalar("zi_polymarket.json", ("variants", 0, "s")), 2.104, 0.0005),
+    Claim("V4 PM zi pi0",
+          _jscalar("zi_polymarket.json", ("variants", 0, "pi0")),
+          0.284, 0.0005),
+    Claim("V4 PM zi-off d_ll",
+          _jscalar("zi_polymarket.json", ("variants", 1, "d_ll")),
+          -0.275, 0.0005),
+    Claim("V4 Kalshi zi s interior",
+          _jscalar("zi_kalshi.json", ("variants", 0, "s")), 2.421, 0.001),
+    Claim("V4 Kalshi zi-off s interior",
+          _jscalar("zi_kalshi.json", ("variants", 1, "s")), 2.429, 0.001),
+    Claim("V4 Kalshi zi pi0",
+          _jscalar("zi_kalshi.json", ("variants", 0, "pi0")), 0.006, 0.0005),
+    Claim("V4 PM race n_obs",
+          _jscalar("race_summary_polymarket.json", ("n_obs",)), 117252, 0),
+    Claim("V4 Kalshi race n_obs",
+          _jscalar("race_summary_kalshi.json", ("n_obs",)), 49209, 0),
+    Claim("V4 PM composite-zi delta",
+          _jscalar("race_summary_polymarket.json",
+                   ("models", 0, "delta_vs_composite")), 0.069, 0.0005),
+    Claim("V4 PM global-slv delta",
+          _jscalar("race_summary_polymarket.json",
+                   ("models", 2, "delta_vs_composite")), -4.101, 0.001),
+    Claim("V4 Kalshi composite-zi delta",
+          _jscalar("race_summary_kalshi.json",
+                   ("models", 0, "delta_vs_composite")), 0.016, 0.0005),
+    Claim("V4 Kalshi global-slv delta",
+          _jscalar("race_summary_kalshi.json",
+                   ("models", 2, "delta_vs_composite")), 0.179, 0.0005),
+    Claim("V4 PM budget 30d full ratio",
+          _jscalar("budget_v4_polymarket.json", ("tau~30d", "full_ratio")),
+          1.157, 0.0005),
+    Claim("V4 PM budget 30d realized ratio",
+          _jscalar("budget_v4_polymarket.json", ("tau~30d", "real_ratio")),
+          1.174, 0.0005),
+    Claim("V4 Kalshi budget 30d full ratio",
+          _jscalar("budget_v4_kalshi.json", ("tau~30d", "full_ratio")),
+          1.468, 0.001),
+    Claim("V4 Kalshi budget 30d realized ratio",
+          _jscalar("budget_v4_kalshi.json", ("tau~30d", "real_ratio")),
+          1.626, 0.0005),
+]
+
 
 def main() -> int:
     strict = "--strict" in sys.argv
