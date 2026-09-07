@@ -303,8 +303,14 @@ def _write_tags(out, have: dict[str, list[str]]) -> None:
 def _kalshi_selection() -> pd.DataFrame:
     cat = pd.read_parquet(CATALOG / "kalshi.parquet")
     cat["volume"] = pd.to_numeric(cat["volume"], errors="coerce")
-    start = pd.to_datetime(cat["start"], utc=True, errors="coerce")
-    end = pd.to_datetime(cat["end"], utc=True, errors="coerce")
+    # format="ISO8601" is load-bearing: without it pandas infers the format
+    # from the first rows and coerces every fractional-second timestamp to
+    # NaT, which silently dropped 12,966 top-50k markets ($23.3B volume,
+    # incl. PRES-2024) from the 2026-09-06 bars pull. Found 2026-09-07.
+    start = pd.to_datetime(cat["start"], utc=True, format="ISO8601",
+                           errors="coerce")
+    end = pd.to_datetime(cat["end"], utc=True, format="ISO8601",
+                         errors="coerce")
     life = (end - start).dt.total_seconds() / 86400
     sel = cat[cat["closed"].astype(bool)
               & (cat["volume"] >= KALSHI_MIN_VOLUME)

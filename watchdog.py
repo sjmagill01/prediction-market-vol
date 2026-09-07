@@ -21,8 +21,8 @@ MAX_RESTARTS = 30
 
 
 def start() -> subprocess.Popen:
-    return subprocess.Popen([sys.executable, str(HERE / "pull_v2.py")],
-                            cwd=HERE)
+    return subprocess.Popen([sys.executable, str(HERE / "pull_v2.py"),
+                             *sys.argv[1:]], cwd=HERE)
 
 
 def main() -> int:
