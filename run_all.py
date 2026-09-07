@@ -26,7 +26,9 @@ def v1_data():
 
 def v2_empirics():
     """Budget test, power family, diagnostics on the v2 vintage."""
-    raise NotImplementedError("V2: core empirics not built yet")
+    from analysis import empirics_v2
+    if empirics_v2.main([]):
+        raise RuntimeError("V2 empirics failed")
 
 
 def v3_regimes():

@@ -28,7 +28,7 @@ import numpy as np
 import pandas as pd
 from scipy.stats import norm
 
-from analysis.config import SEED
+from analysis.config import DATA_V2, SEED
 
 # ---------------------------------------------------------------- state grid
 P_BUCKETS = np.array([0.0, 0.05, 0.15, 0.30, 0.45, 0.55, 0.70, 0.85,
@@ -80,6 +80,42 @@ def panel(mkts: list[Market]) -> pd.DataFrame:
             "key": m.key, "p": p, "dp": dp, "dp2": dp * dp, "dt": dt,
             "tau": m.t_res - m.ts_days[:-1]}))
     return pd.concat(rows, ignore_index=True)
+
+
+# ------------------------------------------------------------------ loading
+MIN_OBS = 5     # minimum daily closes for a market to enter the panel
+
+
+def load_markets(venue: str) -> list[Market]:
+    """All resolved binary markets of the v2 vintage with daily bars.
+
+    Reads data_v2/catalog/{venue}.parquet + data_v2/bars/{venue}/1440m/.
+    Outcome must be exactly 0 or 1 (Kalshi scalar settlements excluded).
+    Closes are clipped to [0, 1]: the 2026-09-07 full-vintage audit found
+    exactly one out-of-range close (a 1.0025 Polymarket settlement-day
+    print), so the raw files stay untouched and the clip lives here.
+    Resolution time is proxied by the last observed bar (trading halts at
+    resolution); the terminal budget term (final - last close)^2 makes the
+    identity exact regardless of when bars stop.
+    """
+    cat = pd.read_parquet(DATA_V2 / "catalog" / f"{venue}.parquet",
+                          columns=["key", "closed", "final_price"])
+    cat = cat[cat.closed & cat.final_price.isin([0.0, 1.0])]
+    final = dict(zip(cat.key.astype(str), cat.final_price))
+    out = []
+    for f in sorted((DATA_V2 / "bars" / venue / "1440m").glob("*.parquet")):
+        key = f.stem
+        if key not in final:
+            continue
+        df = pd.read_parquet(f, columns=["ts", "close"])
+        if len(df) < MIN_OBS:
+            continue
+        ts = pd.to_datetime(df["ts"], utc=True)
+        days = (ts - ts.iloc[0]).dt.total_seconds().to_numpy() / 86400.0
+        closes = np.clip(df["close"].to_numpy(float), 0.0, 1.0)
+        out.append(Market(key=key, ts_days=days, closes=closes,
+                          final=float(final[key]), t_res=float(days[-1])))
+    return out
 
 
 # ---------------------------------------------------------------- simulator

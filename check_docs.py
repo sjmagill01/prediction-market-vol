@@ -36,6 +36,41 @@ class Claim:
 CLAIMS: list[Claim] = []
 
 
+def _scalar(label: str, path: tuple[str, ...]):
+    """Reader for results_v2/empirics_scalars_{label}.json."""
+    def compute() -> float:
+        import json
+        with open(RESULTS / f"empirics_scalars_{label}.json") as fh:
+            d = json.load(fh)
+        for k in path:
+            d = d[k]
+        return float(d)
+    return compute
+
+
+# ---- V2 core empirics (analysis/empirics_v2.py, run 2026-09-07)
+CLAIMS += [
+    Claim("V2 PM budget slope", _scalar("polymarket", ("budget_slope",)),
+          1.19, 0.005),
+    Claim("V2 Kalshi budget slope", _scalar("kalshi", ("budget_slope",)),
+          1.46, 0.005),
+    Claim("V2 PM bulk gamma", _scalar("polymarket", ("power_bulk", "gamma")),
+          1.51, 0.005),
+    Claim("V2 Kalshi bulk gamma", _scalar("kalshi", ("power_bulk", "gamma")),
+          1.12, 0.005),
+    Claim("V2 PM bulk alpha", _scalar("polymarket", ("power_bulk", "alpha")),
+          0.53, 0.005),
+    Claim("V2 Kalshi z-ACF lag 1", _scalar("kalshi", ("acf_z_lag1",)),
+          -0.277, 0.0005),
+    Claim("V2 Kalshi lambda-ACF lag 1", _scalar("kalshi", ("acf_lambda_lag1",)),
+          0.205, 0.0005),
+    Claim("V2 PM market count", _scalar("polymarket", ("n_markets",)),
+          3382, 0),
+    Claim("V2 Kalshi market count", _scalar("kalshi", ("n_markets",)),
+          28076, 0),
+]
+
+
 def main() -> int:
     strict = "--strict" in sys.argv
     if not CLAIMS:
