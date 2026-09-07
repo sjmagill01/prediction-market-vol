@@ -4,3 +4,4 @@ __pycache__/
 *.png
 !figures/*.png
 .pytest_cache/
+data_v2/

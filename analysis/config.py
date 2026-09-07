@@ -29,9 +29,13 @@ PM_TOP_N = 4_000
 
 # Kalshi: wide per-series scan (annual/quarterly/monthly/weekly, both API
 # tiers), daily bars for closed markets with volume >= the floor and a
-# lifetime long enough to produce at least two daily closes.
+# lifetime long enough to produce at least two daily closes. The 10k floor
+# alone admits ~231k+ markets (checkpoint sample, 2026-09-06), so the bars
+# backfill takes the top KALSHI_TOP_N by volume (implied floor ~205k
+# contracts), mirroring the PM top-N design.
 KALSHI_MIN_VOLUME = 10_000
 KALSHI_MIN_LIFETIME_DAYS = 2.0
+KALSHI_TOP_N = 50_000
 
 # ------------------------------------------------------------------- grids
 # Venue tick units for the observation grids (PM quotes to 0.1 cent).

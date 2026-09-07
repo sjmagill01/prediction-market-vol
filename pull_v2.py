@@ -33,8 +33,8 @@ import numpy as np
 import pandas as pd
 
 from analysis.config import (DATA_V2, KALSHI_MIN_LIFETIME_DAYS,
-                             KALSHI_MIN_VOLUME, PM_MIN_VOLUME, PM_TOP_N,
-                             SEED)
+                             KALSHI_MIN_VOLUME, KALSHI_TOP_N, PM_MIN_VOLUME,
+                             PM_TOP_N, SEED)
 from pmdata import kalshi, polymarket
 from pmdata.http import get_json
 
@@ -67,6 +67,12 @@ class Progress:
     def step(self, bars: int = 0) -> None:
         self.done += 1
         self.bars += bars
+        if time.time() - self._last > 10:
+            self.write()
+
+    def heartbeat(self) -> None:
+        """Touch progress.json without advancing: keeps the watchdog calm
+        while paginating inside one giant series."""
         if time.time() - self._last > 10:
             self.write()
 
@@ -123,37 +129,94 @@ def kalshi_scan() -> None:
     series = kalshi.fetch_series()
     cat_map = {s["ticker"]: s.get("category") for s in series}
     freq_map = {s["ticker"]: s.get("frequency") for s in series}
-    pr = Progress("kalshi_scan", len(series))
-    rows: list[dict] = []
-    for s in series:
-        st = s["ticker"]
-        for ep in ("/markets", "/historical/markets"):
-            cursor = None
-            try:
-                while True:
-                    params = {"series_ticker": st, "limit": 1000}
-                    if ep == "/markets":
-                        params["status"] = "settled"
-                    if cursor:
-                        params["cursor"] = cursor
-                    j = get_json(kalshi.base() + ep, params=params)
-                    if not j:
-                        break
-                    for m in j.get("markets", []):
-                        r = kalshi._market_row(m, st, s.get("category"))
-                        r["frequency"] = s.get("frequency")
-                        rows.append(r)
-                    cursor = j.get("cursor")
-                    if not cursor:
-                        break
-            except Exception as e:  # noqa: BLE001 - one series never kills the scan
-                log.warning("kalshi series %s (%s) failed: %s", st, ep, e)
-        pr.step()
-    log.info("kalshi_scan: per-series done, %d rows; global historical sweep",
-             len(rows))
-    hist = kalshi.fetch_universe_historical(
-        min_volume=KALSHI_MIN_VOLUME,
-        min_lifetime_days=KALSHI_MIN_LIFETIME_DAYS)
+    # resumable: rows checkpointed per-series to jsonl, done-set in state/
+    ckpt = STATE / "kalshi_scan_rows.jsonl"
+    done = _load_done("kalshi_scan_series")
+    # sub-2-day frequencies can never pass KALSHI_MIN_LIFETIME_DAYS; their
+    # (rare) longer-lived markets are still caught by the global sweep,
+    # which applies the real floors and maps category/frequency the same.
+    skip_freq = {"hourly", "fifteen_min", "daily"}
+    todo = [s for s in series if s["ticker"] not in done
+            and s.get("frequency") not in skip_freq]
+    n_skip = sum(1 for s in series if s.get("frequency") in skip_freq)
+    log.info("kalshi_scan: %d series (%d already done, %d high-frequency "
+             "skipped)", len(todo), len(done), n_skip)
+    pr = Progress("kalshi_scan", len(todo))
+    with open(ckpt, "a", encoding="utf-8") as fh:
+        for s in todo:
+            st = s["ticker"]
+            srows: list[dict] = []
+            for ep in ("/markets", "/historical/markets"):
+                cursor = None
+                pages = 0
+                try:
+                    while True:
+                        params = {"series_ticker": st, "limit": 1000}
+                        if ep == "/markets":
+                            params["status"] = "settled"
+                        if cursor:
+                            params["cursor"] = cursor
+                        j = get_json(kalshi.base() + ep, params=params)
+                        if not j:
+                            break
+                        for m in j.get("markets", []):
+                            r = kalshi._market_row(m, st, s.get("category"))
+                            r["frequency"] = s.get("frequency")
+                            srows.append(r)
+                        cursor = j.get("cursor")
+                        if not cursor:
+                            break
+                        pages += 1
+                        # parlay/exotic monsters hold 100k+ dust markets;
+                        # anything selectable is backstopped by the global
+                        # sweep, so cap the per-series walk
+                        if pages >= 10:
+                            log.info("kalshi series %s (%s): page cap hit, "
+                                     "truncating", st, ep)
+                            break
+                        pr.heartbeat()
+                except Exception as e:  # noqa: BLE001 - one series never kills the scan
+                    log.warning("kalshi series %s (%s) failed: %s", st, ep, e)
+            for r in srows:
+                fh.write(json.dumps(r, default=str) + "\n")
+            fh.flush()
+            done.add(st)
+            pr.step()
+            if len(done) % 50 == 0:
+                _save_done("kalshi_scan_series", done)
+    _save_done("kalshi_scan_series", done)
+    # stream the (multi-GB) checkpoint; keep only rows that can ever be
+    # selected -- kalshi_bars filters on KALSHI_MIN_VOLUME anyway
+    rows = []
+    total = 0
+    with open(ckpt, encoding="utf-8") as fh2:
+        for ln in fh2:
+            if not ln.strip():
+                continue
+            total += 1
+            r = json.loads(ln)
+            v = r.get("volume")
+            if v is not None and v >= KALSHI_MIN_VOLUME:
+                rows.append(r)
+    log.info("kalshi_scan: per-series done, %d of %d checkpointed rows "
+             "above volume floor; global historical sweep", len(rows), total)
+    # The sweep is ONE long library call that never ticks progress.json;
+    # heartbeat from a side thread so the watchdog doesn't falsely kill it.
+    import threading
+    stop = threading.Event()
+
+    def _beat() -> None:
+        while not stop.wait(60):
+            PROGRESS.touch()
+
+    beater = threading.Thread(target=_beat, daemon=True)
+    beater.start()
+    try:
+        hist = kalshi.fetch_universe_historical(
+            min_volume=KALSHI_MIN_VOLUME,
+            min_lifetime_days=KALSHI_MIN_LIFETIME_DAYS)
+    finally:
+        stop.set()
     if not hist.empty:
         hist["category"] = hist["series_ticker"].map(cat_map)
         hist["frequency"] = hist["series_ticker"].map(freq_map)
@@ -248,7 +311,7 @@ def _kalshi_selection() -> pd.DataFrame:
               & (life >= KALSHI_MIN_LIFETIME_DAYS)].copy()
     # note: itertuples mangles leading-underscore names, so no _-prefix here
     sel["start_ts"], sel["end_ts"] = start[sel.index], end[sel.index]
-    return sel.sort_values("volume", ascending=False)
+    return sel.sort_values("volume", ascending=False).head(KALSHI_TOP_N)
 
 
 def kalshi_bars() -> None:

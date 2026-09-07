@@ -55,9 +55,21 @@ def _bucket(host: str) -> _TokenBucket:
         return _buckets[host]
 
 
+class _CappedRetry(Retry):
+    """Cap server-sent Retry-After sleeps; a huge header froze a pull for
+    30+ minutes on 2026-09-06."""
+
+    def get_retry_after(self, response):
+        ra = super().get_retry_after(response)
+        if ra is not None and ra > 60:
+            log.warning("Retry-After %.0fs capped to 60s", ra)
+            return 60.0
+        return ra
+
+
 def make_session() -> requests.Session:
     s = requests.Session()
-    retry = Retry(
+    retry = _CappedRetry(
         total=6,
         backoff_factor=0.7,
         status_forcelist=[429, 500, 502, 503, 504],
