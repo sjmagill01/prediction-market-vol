@@ -317,6 +317,66 @@ pair-days.
   result (K predicts PM, 0.204, t = 20.6) is stamp mechanics (API fix 15),
   not information flow.
 
+### Structure-first clustering (V6.5, outcome-free fingerprints + GMM)
+
+One fingerprint row per market, built only from closes/timestamps (the
+terminal jump and the outcome are never features, so per-cluster budget
+readouts are not circular). Clustered features are moments of the
+standardized increments z = dp / gauss_rate(p, tau): excess stillness,
+log mean z^2, lumpiness of arrival, second-half-minus-first-half
+intensity, and lag-1 autocorr of z. Thirteen raw path-shape features
+(counts, durations, variance shares by life fifth, ...) are demoted to
+card descriptors after a decisive sim result: on a two-population mixture
+that a supervised probe separates almost perfectly, the GMM recovers
+essentially nothing when clustering raw features and recovers the truth
+cleanly after state-normalization (the stored-run numbers are below; the
+raw-vs-normalized contrast is gated in the test suite). Numpy EM-GMM (full
+covariance, k-means++ x 4 restarts), k chosen by held-out log-likelihood
+with the split by contract, smallest k within 0.01 nats of the best.
+
+Sim oracles (stored in results_v2, gated in tests/test_cluster_v65.py):
+with k free the 2-pop sim chooses k = 8 and gets raw ARI 0.411, but
+majority-collapsing clusters onto the dominant truth label gives ARI
+0.955: the GMM tiles each non-Gaussian population with several Gaussian
+cells without mixing the populations. The clean 1-pop sim chooses k = 7
+for the same reason; k inflation is a documented readout, not a bug.
+
+Both venues choose **k = 8**. Headline readouts:
+
+- **ARI vs category metadata: 0.007 (PM), 0.016 (Kalshi).** The types are
+  dynamics, not topics; every Kalshi cluster is majority-Sports because
+  the venue is, but the clusters split Sports markets apart rather than
+  separating Sports from Politics.
+- **Budget-slope decomposition.** Kalshi: cluster 2 (11.0% of markets)
+  slope 3.50 and cluster 4 (4.9%) slope 2.62 carry the venue excess;
+  the modal cluster 5 (33.0%) sits at 1.19. Polymarket: cluster 1
+  (15.2%, most-Politics) slope 1.80 vs cluster 4 (11.8%, 96.3% still
+  days) slope 0.71; cluster 3 (0.8%) has terminal-jump share 0.995.
+- **Per-cluster power fits.** Kalshi gamma: 0.58 / 1.25 / 1.46 / 1.53 /
+  1.53 / 1.85 / 2.30 across the seven fittable clusters (venue-wide bulk
+  1.03 is a blend). PM: 1.38 and 1.87 on the two large fittable clusters
+  (venue-wide 1.51); five PM clusters have too few populated cells to
+  fit, and the zero-stillness cluster 6 fits degenerately (gamma -1.86),
+  reported as-is.
+- **Partitioned SLV gate** (global vs category vs cluster, each cell
+  refit on train markets, all scored on identical held-out segments,
+  held-out ll/obs):
+
+  | partition | PM | Kalshi |
+  |---|---|---|
+  | global | 1.616 | 1.156 |
+  | category | **1.634** | 1.166 |
+  | cluster | 1.620 | **1.175** |
+
+  Kalshi: the cluster partition clears the gate (beats category and
+  global). PM: category wins; the cluster split beats global but not the
+  topic baseline. This mirrors the V4 horse race with the venues swapped
+  (there, the regime split was essential on PM and a liability on
+  Kalshi). Caveat: cells under the 2,000-train-step floor fall back to
+  the global theta (PM 3/8 cluster cells and 2/5 category cells support
+  their own fit; Kalshi 4/8 and 4/5), so the non-global partitions are
+  only partly refit and the gate compares partly-fallback mixtures.
+
 ## v1-vintage findings (2026-09-04/05 build, not redone on v2)
 
 Kept for the record; these numbers come from the smaller v1 universe

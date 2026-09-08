@@ -198,6 +198,50 @@ not of path texture. Of lifetime spend, the terminal resolution jump carries
 39% on Polymarket and only 4% on Kalshi, whose markets grind to their
 outcome through final-day trading instead of leaping there.
 
+### Is a venue one population? Outcome-free clustering
+
+Everything above pools markets, either venue-wide or within hand-drawn
+regime cells, and the fits showed classic mixture symptoms (boundary
+parameters, exponents landing between named candidates). So: cluster the
+markets themselves. Each market gets an outcome-free fingerprint built only
+from its traversal path; the clustered features describe the law of the
+standardized increments `z = dp / gauss_rate(p, tau)` (excess stillness,
+mean intensity, lumpiness, late-vs-early intensity shift, bounce), so the
+clusterer sees the dynamics rather than where the path happened to live.
+That normalization is load-bearing: on a simulated two-population mixture
+that a supervised probe separates almost perfectly, clustering raw path-shape
+features recovers essentially nothing, because likelihood gains on
+size/shape nuisance axes drown the dynamics signal; state-normalizing
+first recovers the truth cleanly (majority-collapsed ARI 0.955). A
+from-scratch EM-GMM with held-out model selection (split by contract)
+chooses k = 8 on both venues.
+
+- **Clusters are dynamics, not topics.** Adjusted Rand vs category
+  metadata: 0.007 (Polymarket), 0.016 (Kalshi). The discovered types cut
+  across Sports/Politics rather than rediscovering them.
+- **The venue-level budget slopes decompose.** Kalshi's excess movement is
+  carried by two types: an 11% high-intensity cluster with budget slope
+  3.50 and a 5% cluster at 2.62; the largest cluster (33% of markets) sits
+  at 1.19, near the venue line. Polymarket splits into a 15%
+  excess-movement type (slope 1.80, its most political cluster) against a
+  12% dead-until-resolution type (96% of days still, slope 0.71), plus a
+  small 0.8% type that spends 99.5% of its variance in the terminal jump.
+- **The venue-wide power exponent is an aggregation blend.** Refit within
+  clusters, Kalshi's level exponent gamma separates from 0.58 to 2.30
+  around the venue-wide 1.03; Polymarket's two largest fittable clusters
+  land at 1.38 and 1.87 around the venue-wide 1.51. Most small or still
+  clusters lack the cells to support a fit, and one Polymarket cluster
+  (the zero-stillness type) fits degenerately; the cards report them as-is.
+- **The SLV gate splits by venue, again.** Refitting the R1 SLV separately
+  per partition and scoring identical held-out segments: on Kalshi the
+  cluster partition beats both the category baseline and the global fit
+  (1.175 vs 1.166 vs 1.156 nats/obs); on Polymarket the category partition
+  wins (1.634 vs 1.620 cluster vs 1.616 global). The mirror image of the
+  horse race, where the split helped Polymarket and hurt Kalshi. Caveat:
+  cells below a 2,000-step training floor fall back to the global
+  parameters (3 of 8 Polymarket cluster cells support their own fit, 4 of
+  8 on Kalshi), so both non-global partitions are only partly refit.
+
 ## Arc 2: two venues, one event
 
 82 contract pairs listed on both venues (64 exact matches; the rest close
@@ -251,7 +295,7 @@ every venue comparison into a controlled experiment.
 python -m venv .venv
 .venv/Scripts/python -m pip install -r requirements.txt   # Windows
 
-python run_all.py --list      # phases v1 (data pull) .. v6 (figures + doc check)
+python run_all.py --list      # phases v1 (data pull) .. v65 (clustering)
 python run_all.py             # rebuild everything, in order
 python run_all.py --only v2   # one phase
 
@@ -277,6 +321,8 @@ analysis/race_v4.py       zero-inflated tick layer, walk-forward horse race,
                           MC budget integration
 analysis/bridge_v5.py     cross-venue pair table, gap/budget/power/lead-lag
 analysis/figures_v6.py    every figure above, from results_v2/ only
+analysis/cluster_v65.py   outcome-free fingerprints, EM-GMM, per-cluster
+                          power fits and the partitioned SLV gate
 pull_v2.py             resumable two-venue pull (scan, bars, tags, verify)
 pull_v5_hourly.py      hourly top-up for the 82 bridge pairs
 run_all.py             one-command driver, phases v1-v6

@@ -67,6 +67,13 @@ def v6_docs():
         _sys.argv = argv
 
 
+def v65_cluster():
+    """Structure-first clustering + per-cluster power/SLV gate."""
+    from analysis import cluster_v65
+    if cluster_v65.main([]):
+        raise RuntimeError("V6.5 clustering failed")
+
+
 PHASES = [
     ("v1", v1_data),
     ("v2", v2_empirics),
@@ -74,6 +81,7 @@ PHASES = [
     ("v4", v4_race),
     ("v5", v5_bridge),
     ("v6", v6_docs),
+    ("v65", v65_cluster),
 ]
 
 

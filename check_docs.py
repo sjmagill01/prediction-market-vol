@@ -436,6 +436,137 @@ for _venue, _rows in [
                 _q, 0.0005))
 
 
+# ---- V6.5 structure-first clustering (analysis/cluster_v65.py, run
+# 2026-09-08). Cards list index == cluster id (cards are sorted); power list
+# likewise. Fit-vs-fallback cell counts (3/8 PM, 4/8 Kalshi etc.) come from
+# the run logs, not results_v2/, and are deliberately not registered, like
+# the data-pull provenance counts.
+
+
+def _ari_sim2pop(collapsed: bool):
+    """ARI of the stored 2-pop sim clustering vs truth (key prefix n_)."""
+    def compute() -> float:
+        import csv
+        from collections import Counter, defaultdict
+        rows = []
+        with open(RESULTS / "cluster65_features_sim_2pop.csv",
+                  encoding="utf-8") as fh:
+            for row in csv.DictReader(fh):
+                rows.append((int(float(row["cluster"])),
+                             int(row["key"].startswith("n_"))))
+        lab = [c for c, _ in rows]
+        if collapsed:
+            votes = defaultdict(list)
+            for c, t in rows:
+                votes[c].append(t)
+            maj = {c: int(sum(v) * 2 > len(v)) for c, v in votes.items()}
+            lab = [maj[c] for c in lab]
+        truth = [t for _, t in rows]
+        ct = Counter(zip(lab, truth))
+        comb = lambda x: x * (x - 1) / 2                      # noqa: E731
+        s_ij = sum(comb(v) for v in ct.values())
+        ra = Counter(lab)
+        rb = Counter(truth)
+        s_a = sum(comb(v) for v in ra.values())
+        s_b = sum(comb(v) for v in rb.values())
+        exp = s_a * s_b / comb(len(rows))
+        mx = 0.5 * (s_a + s_b)
+        return float((s_ij - exp) / (mx - exp))
+    return compute
+
+
+CLAIMS += [
+    Claim("V6.5 sim 2-pop raw ARI", _ari_sim2pop(False), 0.411, 0.0005),
+    Claim("V6.5 sim 2-pop majority-collapsed ARI", _ari_sim2pop(True),
+          0.955, 0.0005),
+    Claim("V6.5 sim 2-pop chosen k",
+          _jscalar("cluster65_scalars_sim_2pop.json", ("k",)), 8, 0),
+    Claim("V6.5 sim 1-pop chosen k",
+          _jscalar("cluster65_scalars_sim_1pop.json", ("k",)), 7, 0),
+]
+
+for _venue, _short, _k, _ari in [("polymarket", "PM", 8, 0.007),
+                                 ("kalshi", "Kalshi", 8, 0.016)]:
+    _f = f"cluster65_scalars_{_venue}.json"
+    CLAIMS += [
+        Claim(f"V6.5 {_short} chosen k", _jscalar(_f, ("k",)), _k, 0),
+        Claim(f"V6.5 {_short} ARI vs category",
+              _jscalar(_f, ("ari_vs_category",)), _ari, 0.0005),
+    ]
+
+# per-cluster cards quoted in README/NOTES
+for _lbl, _path, _q, _tol in [
+    # Polymarket: excess-movement vs dead-until-resolution vs terminal type
+    ("V6.5 PM cl1 share",
+     ("cluster65_scalars_polymarket.json", ("cards", 1, "share")),
+     0.152, 0.0005),
+    ("V6.5 PM cl1 budget slope",
+     ("cluster65_scalars_polymarket.json", ("cards", 1, "budget_slope")),
+     1.80, 0.005),
+    ("V6.5 PM cl4 share",
+     ("cluster65_scalars_polymarket.json", ("cards", 4, "share")),
+     0.118, 0.0005),
+    ("V6.5 PM cl4 still frac",
+     ("cluster65_scalars_polymarket.json", ("cards", 4, "still")),
+     0.963, 0.0005),
+    ("V6.5 PM cl4 budget slope",
+     ("cluster65_scalars_polymarket.json", ("cards", 4, "budget_slope")),
+     0.71, 0.005),
+    ("V6.5 PM cl3 share",
+     ("cluster65_scalars_polymarket.json", ("cards", 3, "share")),
+     0.008, 0.0005),
+    ("V6.5 PM cl3 terminal share",
+     ("cluster65_scalars_polymarket.json", ("cards", 3, "term_share")),
+     0.995, 0.0005),
+    # Kalshi: the two excess carriers and the modal cluster
+    ("V6.5 Kalshi cl2 share",
+     ("cluster65_scalars_kalshi.json", ("cards", 2, "share")),
+     0.110, 0.0005),
+    ("V6.5 Kalshi cl2 budget slope",
+     ("cluster65_scalars_kalshi.json", ("cards", 2, "budget_slope")),
+     3.50, 0.005),
+    ("V6.5 Kalshi cl4 share",
+     ("cluster65_scalars_kalshi.json", ("cards", 4, "share")),
+     0.049, 0.0005),
+    ("V6.5 Kalshi cl4 budget slope",
+     ("cluster65_scalars_kalshi.json", ("cards", 4, "budget_slope")),
+     2.62, 0.005),
+    ("V6.5 Kalshi cl5 share",
+     ("cluster65_scalars_kalshi.json", ("cards", 5, "share")),
+     0.330, 0.0005),
+    ("V6.5 Kalshi cl5 budget slope",
+     ("cluster65_scalars_kalshi.json", ("cards", 5, "budget_slope")),
+     1.19, 0.005),
+]:
+    CLAIMS.append(Claim(_lbl, _jscalar(*_path), _q, _tol))
+
+# per-cluster power gammas quoted in NOTES (all fittable Kalshi clusters,
+# the two large fittable PM clusters, and the degenerate PM zero-stillness
+# fit, reported as-is)
+for _venue, _cl, _q in [("kalshi", 0, 1.85), ("kalshi", 2, 1.53),
+                        ("kalshi", 3, 0.58), ("kalshi", 4, 2.30),
+                        ("kalshi", 5, 1.53), ("kalshi", 6, 1.46),
+                        ("kalshi", 7, 1.25),
+                        ("polymarket", 1, 1.38), ("polymarket", 7, 1.87),
+                        ("polymarket", 6, -1.86)]:
+    CLAIMS.append(Claim(
+        f"V6.5 {_venue} cl{_cl} power gamma",
+        _jscalar(f"cluster65_scalars_{_venue}.json",
+                 ("power", _cl, "gamma")), _q, 0.005))
+
+# partitioned SLV gate (held-out ll/obs table in README/NOTES)
+for _venue, _part, _q in [("polymarket", "global", 1.616),
+                          ("polymarket", "category", 1.634),
+                          ("polymarket", "cluster", 1.620),
+                          ("kalshi", "global", 1.156),
+                          ("kalshi", "category", 1.166),
+                          ("kalshi", "cluster", 1.175)]:
+    CLAIMS.append(Claim(
+        f"V6.5 {_venue} SLV gate {_part}",
+        _jscalar(f"cluster65_scalars_{_venue}.json",
+                 ("slv_gate", _part, "heldout_ll_per_obs")), _q, 0.0005))
+
+
 def main() -> int:
     strict = "--strict" in sys.argv
     if not CLAIMS:
