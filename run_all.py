@@ -47,7 +47,9 @@ def v4_race():
 
 def v5_bridge():
     """Cross-venue matched-pair bridge analyses."""
-    raise NotImplementedError("V5: bridge not built yet")
+    from analysis import bridge_v5
+    if bridge_v5.main([]):
+        raise RuntimeError("V5 bridge failed")
 
 
 def v6_docs():

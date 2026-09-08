@@ -172,6 +172,59 @@ CLAIMS += [
           1.597, 0.0005),
 ]
 
+# ---- V5 cross-venue bridge (analysis/bridge_v5.py, run 2026-09-07).
+# Daily alignment is wall-clock (Kalshi labels shifted +1 day; Kalshi daily
+# candles are start-stamped, PM daily bars are 00 UTC point samples).
+CLAIMS += [
+    Claim("V5 pair count",
+          _jscalar("bridge_v5.json", ("pairs", "n")), 82, 0),
+    Claim("V5 exact pair count",
+          _jscalar("bridge_v5.json", ("pairs", "n_exact")), 64, 0),
+    Claim("V5 mean abs gap",
+          _jscalar("bridge_v5.json", ("gap", "mean_abs_gap")),
+          0.024, 0.0005),
+    Claim("V5 gap frac > 5c",
+          _jscalar("bridge_v5.json", ("gap", "frac_gt_5c")),
+          0.086, 0.0005),
+    Claim("V5 gap half-life days",
+          _jscalar("bridge_v5.json", ("gap", "gap_half_life_days")),
+          4.58, 0.005),
+    Claim("V5 budget ratio-of-ratios (K/PM)",
+          _jscalar("bridge_v5.json",
+                   ("paired_budget", "median_ratio_of_ratios")),
+          1.457, 0.0005),
+    Claim("V5 budget frac pairs K > PM",
+          _jscalar("bridge_v5.json", ("paired_budget", "frac_k_gt_pm")),
+          0.720, 0.0005),
+    Claim("V5 matched-panel gamma Kalshi",
+          _jscalar("bridge_v5.json", ("paired_power", "kalshi", "gamma")),
+          1.344, 0.0005),
+    Claim("V5 matched-panel gamma PM",
+          _jscalar("bridge_v5.json", ("paired_power", "polymarket", "gamma")),
+          1.531, 0.0005),
+    # Hourly panel: PM leads Kalshi; the reverse coefficient is an order
+    # of magnitude smaller. Daily same-label lead-lag is stamp mechanics.
+    Claim("V5 hourly PM->K cross lag coef",
+          _jscalar("bridge_v5.json",
+                   ("lead_lag_hourly", "pm_predicts_k", "cross_lag")),
+          0.239, 0.0005),
+    Claim("V5 hourly PM->K cross t",
+          _jscalar("bridge_v5.json",
+                   ("lead_lag_hourly", "pm_predicts_k", "cross_t")),
+          57.9, 0.05),
+    Claim("V5 hourly K->PM cross lag coef",
+          _jscalar("bridge_v5.json",
+                   ("lead_lag_hourly", "k_predicts_pm", "cross_lag")),
+          0.018, 0.0005),
+    Claim("V5 hourly contemporaneous xcorr",
+          _jscalar("bridge_v5.json",
+                   ("lead_lag_hourly", "xcorr_dpm_leads_dk", "0")),
+          0.244, 0.0005),
+    Claim("V5 hourly n_obs",
+          _jscalar("bridge_v5.json", ("lead_lag_hourly", "n_obs")),
+          198224, 0),
+]
+
 
 def main() -> int:
     strict = "--strict" in sys.argv
