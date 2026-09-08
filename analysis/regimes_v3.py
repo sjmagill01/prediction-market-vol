@@ -385,11 +385,16 @@ def haz_pmf(k: np.ndarray, th: dict) -> np.ndarray:
                   - norm.cdf((k - 0.5) / th["sigma"]))
     p = p + th["pi0"] * (k == 0)
     ka = np.abs(k)
-    gap = np.where(
-        k >= 2, th["w_a"] * (1 - th["rho_a"]) * th["rho_a"] ** (ka - 2),
-        np.where(k <= -2,
-                 (1 - th["w_a"]) * (1 - th["rho_t"]) * th["rho_t"] ** (ka - 2),
-                 0.0))
+    # errstate: np.where evaluates BOTH branches, so rho**(ka-2) overflows on
+    # the masked |k|<2 entries when rho is tiny; the results are discarded by
+    # the mask, so suppressing the warning is bit-identical.
+    with np.errstate(over="ignore", divide="ignore", invalid="ignore"):
+        gap = np.where(
+            k >= 2, th["w_a"] * (1 - th["rho_a"]) * th["rho_a"] ** (ka - 2),
+            np.where(k <= -2,
+                     (1 - th["w_a"]) * (1 - th["rho_t"])
+                     * th["rho_t"] ** (ka - 2),
+                     0.0))
     return p + th["h"] * gap
 
 

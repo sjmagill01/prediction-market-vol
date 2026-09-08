@@ -53,8 +53,18 @@ def v5_bridge():
 
 
 def v6_docs():
-    """Figures + doc-number check (delegates to check_docs.py)."""
-    raise NotImplementedError("V6: docs/figures pass not built yet")
+    """Figures from results_v2 + doc-number check (check_docs --strict)."""
+    from analysis import figures_v6
+    if figures_v6.main([]):
+        raise RuntimeError("V6 figures failed")
+    import check_docs
+    import sys as _sys
+    argv, _sys.argv = _sys.argv, ["check_docs.py", "--strict"]
+    try:
+        if check_docs.main():
+            raise RuntimeError("V6 doc-number check failed")
+    finally:
+        _sys.argv = argv
 
 
 PHASES = [

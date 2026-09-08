@@ -1,6 +1,6 @@
 # How to think about the volatility of prediction-market prices
 
-This note records the modeling framework behind `analysis/vol_check.py`: what
+This note records the modeling framework behind the analyses in this repo: what
 "volatility" can even mean for an asset that is a probability, which classes of
 models are admissible, why an equity-style Heston model cannot be transplanted
 verbatim, and what "implied volatility" means here. It is the design rationale
@@ -119,11 +119,12 @@ which nests the candidates (gamma=1, alpha=1: binomial; gamma=1, alpha=0:
 Wright-Fisher) and brackets the probit rate, whose boundary behaviour
 phi(Phi^-1(p))^2 ~ p^2 * 2ln(1/p) is "logit plus a log correction"
 (effective gamma ~ 1.6 over the sampled range in simulation, exactly what
-`power_fit` recovers with alpha = 1.02). The fitted gamma answers "which
-custom transform is best" directly: gamma-hat = 2 says log-odds Brownian
-motion, gamma-hat = 1 says angular scale. The fit is also a bounce
-detector: additive noise is state-*independent*, so it drags both
-exponents toward zero (simulated noise 0.02: gamma 0.68, alpha 0.32).
+the power fit recovers on the clean sim: gamma 1.57, alpha 1.00). The
+fitted gamma answers "which custom transform is best" directly:
+gamma-hat = 2 says log-odds Brownian motion, gamma-hat = 1 says angular
+scale. The fit is also a bounce detector: additive noise is
+state-*independent*, so it drags both exponents down (simulated 2c noise:
+gamma 1.11, alpha 0.82 in the bulk).
 
 The predicted failure pattern is diagnostic: if the Gaussian form fits the
 bulk but the extreme-p buckets show *more* movement than it allows, news is
@@ -181,21 +182,24 @@ fit a Heston-type lambda_t process only if the lambda ACF demands it.
 test A is the realised-vs-implied comparison and its slope is the variance
 risk premium. This is the prediction market's built-in VIX, per market.
 
-**(2) Implied information intensity.** Once information flow is allowed to be
-non-uniform, `lambda_t` is the free object, and
+**(2) Filtered information intensity: NOT an implied vol.** Once information
+flow is allowed to be non-uniform, `lambda_t` is the free object, and
 
 ```
-lambda_imp = local variance of dp  /  phi(Phi^-1(p))^2
+lambda_hat = local variance of dp  /  phi(Phi^-1(p))^2
 ```
 
-is the true IV analog: it strips out the mechanical (p, tau) state-dependence
-exactly the way Black-Scholes IV strips out moneyness/maturity, leaving a pure
-"how fast is uncertainty resolving" number comparable across markets,
-categories, and time. `1/lambda_imp` is an implied effective time to
-resolution; comparing it to actual tau asks whether information is arriving
-faster or slower than the clock. Caveat: computed from realised dp^2 it is a
-realised intensity, "implied" only in the model-normalised sense; the genuinely
-forward-looking version is construction 3.
+strips out the mechanical (p, tau) state-dependence the way Black-Scholes IV
+strips out moneyness/maturity, leaving a "how fast is uncertainty resolving"
+number comparable across markets, categories, and time. But it is a
+**realised/filtered** quantity, not an implied one, and this repo never calls
+it IV: Black-Scholes IV exists because *two* instruments (an option and its
+underlying) are priced on one filtration and the option price can be
+inverted; lambda_hat is extracted from a single instrument's own past moves
+and is backward-looking. Genuinely forward-looking constructions need a
+second instrument: strike strips (construction 3) or calendar pairs
+(a by-T1 vs by-T2 contract on the same event implies a hazard rate over
+[T1, T2]).
 
 **(3) Strike-based IV from bracketed markets.** Kalshi ranged markets (CPI
 above x%, S&P close in [a,b], Fed brackets) are digital-option strips on a

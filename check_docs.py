@@ -226,6 +226,216 @@ CLAIMS += [
 ]
 
 
+def _csv(fname: str, where: dict[str, str], field: str):
+    """Reader for a CSV in results_v2/: first row matching `where`, column
+    `field`."""
+    def compute() -> float:
+        import csv
+        with open(RESULTS / fname, encoding="utf-8") as fh:
+            for row in csv.DictReader(fh):
+                if all(row[k] == v for k, v in where.items()):
+                    return float(row[field])
+        raise KeyError(f"{fname}: no row matching {where}")
+    return compute
+
+
+# ---- V6 docs pass (README/NOTES rewrite, 2026-09-07): claims for every
+# number newly quoted in the docs. Data-pull provenance counts (catalog
+# rows, bar-file counts) are deliberately NOT registered: they live in
+# data_v2/, and this checker must run from committed results_v2/ alone.
+CLAIMS += [
+    # core empirics
+    Claim("V6 PM move count", _scalar("polymarket", ("n_moves",)), 219593, 0),
+    Claim("V6 Kalshi move count", _scalar("kalshi", ("n_moves",)), 708078, 0),
+    Claim("V6 PM z-ACF lag 1", _scalar("polymarket", ("acf_z_lag1",)),
+          -0.115, 0.0005),
+    Claim("V6 PM lambda-ACF lag 1", _scalar("polymarket", ("acf_lambda_lag1",)),
+          0.188, 0.0005),
+    Claim("V6 PM budget se", _scalar("polymarket", ("budget_se",)),
+          0.021, 0.0005),
+    Claim("V6 Kalshi budget se", _scalar("kalshi", ("budget_se",)),
+          0.009, 0.0005),
+    Claim("V6 Kalshi bulk alpha", _scalar("kalshi", ("power_bulk", "alpha")),
+          0.51, 0.005),
+    Claim("V6 sim clean budget slope", _scalar("sim_clean", ("budget_slope",)),
+          0.986, 0.0005),
+    Claim("V6 sim noise budget slope", _scalar("sim_noise", ("budget_slope",)),
+          1.207, 0.0005),
+    Claim("V6 sim noise z-ACF lag 1", _scalar("sim_noise", ("acf_z_lag1",)),
+          -0.195, 0.0005),
+    Claim("V6 sim stochvol lambda-ACF lag 1",
+          _scalar("sim_stochvol", ("acf_lambda_lag1",)), 0.126, 0.0005),
+    Claim("V6 sim clean bulk gamma",
+          _scalar("sim_clean", ("power_bulk", "gamma")), 1.57, 0.005),
+    Claim("V6 sim clean bulk alpha",
+          _scalar("sim_clean", ("power_bulk", "alpha")), 1.00, 0.005),
+    Claim("V6 sim noise bulk gamma",
+          _scalar("sim_noise", ("power_bulk", "gamma")), 1.11, 0.005),
+    Claim("V6 sim noise bulk alpha",
+          _scalar("sim_noise", ("power_bulk", "alpha")), 0.82, 0.005),
+    Claim("V6 Kalshi longshot bucket ratio",
+          _csv("empirics_budget_kalshi.csv",
+               {"bucket": "[0.00,0.05)"}, "ratio"), 7.37, 0.005),
+    Claim("V6 Kalshi favorite bucket ratio",
+          _csv("empirics_budget_kalshi.csv",
+               {"bucket": "[0.95,1.00)"}, "ratio"), 12.91, 0.005),
+    # regimes
+    Claim("V6 PM R2 budget share",
+          _jscalar("regimes_scalars_polymarket.json",
+                   ("budget_by_regime", "R2 itm/hazard")), 0.064, 0.0005),
+    Claim("V6 PM R3 budget share",
+          _jscalar("regimes_scalars_polymarket.json",
+                   ("budget_by_regime", "R3 jumpy")), 0.323, 0.0005),
+    Claim("V6 Kalshi R2 budget share",
+          _jscalar("regimes_scalars_kalshi.json",
+                   ("budget_by_regime", "R2 itm/hazard")), 0.039, 0.0005),
+    Claim("V6 Kalshi R3 budget share",
+          _jscalar("regimes_scalars_kalshi.json",
+                   ("budget_by_regime", "R3 jumpy")), 0.128, 0.0005),
+    Claim("V6 sim clean R1 share",
+          _jscalar("regimes_scalars_sim_clean.json",
+                   ("budget_by_regime", "R1 diffusive")), 0.997, 0.0005),
+    Claim("V6 sim stale R2 share",
+          _jscalar("regimes_scalars_sim_stale.json",
+                   ("budget_by_regime", "R2 itm/hazard")), 0.993, 0.0005),
+    # SLV
+    Claim("V6 PM SLV steps",
+          _jscalar("slv_polymarket.json", ("n_steps",)), 35299, 0),
+    Claim("V6 Kalshi SLV steps",
+          _jscalar("slv_kalshi.json", ("n_steps",)), 40046, 0),
+    Claim("V6 PM SLV phi",
+          _jscalar("slv_polymarket.json", ("variants", 0, "phi")),
+          0.78, 0.005),
+    Claim("V6 Kalshi SLV phi",
+          _jscalar("slv_kalshi.json", ("variants", 0, "phi")), 0.71, 0.005),
+    # endgame arrival/size split
+    Claim("V6 PM endgame arrival g",
+          _jscalar("endgame_polymarket.json", ("arrival", "g")), 0.32, 0.005),
+    Claim("V6 PM endgame size g",
+          _jscalar("endgame_polymarket.json", ("size", "g")), 0.95, 0.005),
+    Claim("V6 Kalshi endgame arrival g",
+          _jscalar("endgame_kalshi.json", ("arrival", "g")), 0.58, 0.005),
+    Claim("V6 Kalshi endgame size g",
+          _jscalar("endgame_kalshi.json", ("size", "g")), 0.00, 0.005),
+    # ITM hazard headline cells
+    Claim("V6 Kalshi hazard cell pi0",
+          _csv("hazard_kalshi.csv",
+               {"dist_bucket": "[0.00,0.05)", "tau_band": "[1,3)d"}, "pi0"),
+          0.45, 0.005),
+    Claim("V6 Kalshi hazard cell h/day",
+          _csv("hazard_kalshi.csv",
+               {"dist_bucket": "[0.00,0.05)", "tau_band": "[1,3)d"}, "h_day"),
+          0.21, 0.005),
+    Claim("V6 Kalshi hazard cell gap ticks",
+          _csv("hazard_kalshi.csv",
+               {"dist_bucket": "[0.00,0.05)", "tau_band": "[1,3)d"},
+               "gap_mean_tk"), 23.9, 0.05),
+    Claim("V6 Kalshi hazard cell w_away",
+          _csv("hazard_kalshi.csv",
+               {"dist_bucket": "[0.00,0.05)", "tau_band": "[1,3)d"}, "w_away"),
+          0.52, 0.005),
+    Claim("V6 PM hazard cell gap ticks",
+          _csv("hazard_polymarket.csv",
+               {"dist_bucket": "[0.00,0.05)", "tau_band": "[3,7)d"},
+               "gap_mean_tk"), 30.6, 0.05),
+    Claim("V6 PM hazard cell w_away",
+          _csv("hazard_polymarket.csv",
+               {"dist_bucket": "[0.00,0.05)", "tau_band": "[3,7)d"}, "w_away"),
+          0.23, 0.005),
+    # race deltas not previously claimed
+    Claim("V6 PM const-lam delta",
+          _jscalar("race_summary_polymarket.json",
+                   ("models", 3, "delta_vs_composite")), -1.572, 0.0005),
+    Claim("V6 PM bucket delta",
+          _jscalar("race_summary_polymarket.json",
+                   ("models", 4, "delta_vs_composite")), -1.122, 0.0005),
+    Claim("V6 PM garch delta",
+          _jscalar("race_summary_polymarket.json",
+                   ("models", 5, "delta_vs_composite")), -0.733, 0.0005),
+    Claim("V6 Kalshi const-lam delta",
+          _jscalar("race_summary_kalshi.json",
+                   ("models", 3, "delta_vs_composite")), -0.316, 0.0005),
+    Claim("V6 Kalshi bucket delta",
+          _jscalar("race_summary_kalshi.json",
+                   ("models", 4, "delta_vs_composite")), -0.665, 0.0005),
+    Claim("V6 Kalshi garch delta",
+          _jscalar("race_summary_kalshi.json",
+                   ("models", 5, "delta_vs_composite")), -0.826, 0.0005),
+    Claim("V6 PM 30d zi jump share",
+          _jscalar("budget_v4_polymarket.json",
+                   ("tau~30d", "zi_jump_share")), 0.995, 0.0005),
+    # bridge
+    Claim("V6 gap n_obs",
+          _jscalar("bridge_v5.json", ("gap", "n_obs")), 9341, 0),
+    Claim("V6 median abs gap",
+          _jscalar("bridge_v5.json", ("gap", "median_abs_gap")),
+          0.0105, 0.0001),
+    Claim("V6 mean gap exact pairs",
+          _jscalar("bridge_v5.json",
+                   ("gap", "mean_abs_gap_by_quality", "exact")),
+          0.019, 0.0005),
+    Claim("V6 mean gap approx pairs",
+          _jscalar("bridge_v5.json",
+                   ("gap", "mean_abs_gap_by_quality", "approx")),
+          0.036, 0.0005),
+    Claim("V6 mean gap election domain",
+          _jscalar("bridge_v5.json",
+                   ("gap", "mean_abs_gap_by_domain", "election")),
+          0.097, 0.0005),
+    Claim("V6 gap AR1 rho",
+          _jscalar("bridge_v5.json", ("gap", "gap_ar1_rho")), 0.860, 0.0005),
+    Claim("V6 daily K->PM cross lag (stamp mechanics)",
+          _jscalar("bridge_v5.json",
+                   ("lead_lag_daily", "k_predicts_pm", "cross_lag")),
+          0.204, 0.0005),
+    Claim("V6 daily K->PM cross t (stamp mechanics)",
+          _jscalar("bridge_v5.json",
+                   ("lead_lag_daily", "k_predicts_pm", "cross_t")),
+          20.6, 0.05),
+]
+
+# pair counts by domain
+for _dom, _n in [("fed_decision", 47), ("fed_chair_nom", 14),
+                 ("btc_monthly", 8), ("btc_yearly", 6), ("election", 7)]:
+    CLAIMS.append(Claim(
+        f"V6 pair count {_dom}",
+        _jscalar("bridge_v5.json", ("pairs", "by_domain", _dom)), _n, 0))
+
+# endgame lifetime-spend shares (NOTES table, both venues, all bands)
+for _venue, _shares in [
+    ("polymarket", {"tau<=1d": 0.112, "tau(1,3]d": 0.050, "tau(3,7]d": 0.101,
+                    "tau(7,30]d": 0.140, "tau>30d": 0.207,
+                    "terminal jump": 0.390}),
+    ("kalshi", {"tau<=1d": 0.535, "tau(1,3]d": 0.092, "tau(3,7]d": 0.070,
+                "tau(7,30]d": 0.114, "tau>30d": 0.150,
+                "terminal jump": 0.039}),
+]:
+    for _band, _q in _shares.items():
+        CLAIMS.append(Claim(
+            f"V6 {_venue} spend share {_band}",
+            _csv(f"endgame_spend_{_venue}.csv", {"band": _band}, "share"),
+            _q, 0.0005))
+
+# budget-integration table (NOTES, both venues, all bands x engines)
+for _venue, _rows in [
+    ("polymarket", {"tau~30d": (1.157, 1.174, 1.163, 1.174),
+                    "tau~14d": (1.077, 1.085, 1.077, 1.158),
+                    "tau~7d": (1.041, 1.044, 1.041, 1.128),
+                    "tau~3d": (1.021, 1.023, 1.021, 1.060)}),
+    ("kalshi", {"tau~30d": (1.375, 1.537, 1.335, 1.597),
+                "tau~14d": (1.112, 1.205, 1.096, 1.329),
+                "tau~7d": (1.073, 1.117, 1.064, 1.204),
+                "tau~3d": (1.032, 1.056, 1.029, 1.124)}),
+]:
+    for _band, (_full, _zi, _clam, _real) in _rows.items():
+        for _field, _q in [("full_ratio", _full), ("zi_ratio", _zi),
+                           ("clam_ratio", _clam), ("real_ratio", _real)]:
+            CLAIMS.append(Claim(
+                f"V6 {_venue} {_band} {_field}",
+                _jscalar(f"budget_v4_{_venue}.json", (_band, _field)),
+                _q, 0.0005))
+
+
 def main() -> int:
     strict = "--strict" in sys.argv
     if not CLAIMS:

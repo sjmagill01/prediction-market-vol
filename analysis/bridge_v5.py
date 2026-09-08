@@ -239,7 +239,11 @@ def _within_ar1(panel: pd.DataFrame, col: str) -> float:
     lag = g.groupby(panel.pair_id).shift(1)
     ok = lag.notna()
     x, y = lag[ok].to_numpy(), g[ok].to_numpy()
-    return float(x @ y / (x @ x))
+    xx = x @ x
+    # degenerate panel (all gaps identical, e.g. the zero-gap test): the
+    # AR(1) of a constant series is undefined, return nan without the 0/0
+    # RuntimeWarning.
+    return float(x @ y / xx) if xx > 0 else float("nan")
 
 
 def gap_stats(panel: pd.DataFrame, pairs: pd.DataFrame) -> dict:

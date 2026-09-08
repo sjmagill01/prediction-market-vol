@@ -5,21 +5,40 @@ What kind of random walk does a prediction-market price follow?
 A prediction-market price is a probability: `p_t = E[1_event | F_t]`, a
 martingale confined to [0,1] and absorbed at 0 or 1 when the event resolves.
 That single fact makes every default habit from equity volatility modeling
-wrong, and it makes some remarkable model-free statements possible. This repo
-is a data pipeline (Polymarket + Kalshi, ~9M bars in parquet/DuckDB) plus an
-empirical exploration of how these walks actually move.
+wrong, and it makes some remarkable model-free statements possible.
+
+The repo is a data pipeline plus an empirical study on one frozen vintage
+(markets resolved by 2026-09-06): 3,382 resolved Polymarket markets (219,593
+daily moves), 27,465 resolved Kalshi markets (708,078 daily moves), and
+hourly bars for 82 cross-venue matched pairs. The study runs in two arcs:
+
+1. **One venue at a time**: identify the process. Variance budget, the right
+   [0,1] coordinate, a regime map, a stochastic-local-vol state space with a
+   zero-inflated tick observation layer, an out-of-sample horse race, and a
+   budget-consistency audit of the fitted model.
+2. **Two venues, one event**: 82 hand-matched contract pairs (Fed decisions,
+   Fed chair, BTC, elections) turn venue comparisons into controlled
+   experiments: who spends more variance on the same event, and who moves
+   first.
 
 Companion documents:
 
 - **[THEORY.md](THEORY.md)**: the modeling framework. Why log returns are the
-  wrong coordinate, the variance-budget identity, the three-layer hierarchy of
-  admissible models, why an equity-style Heston model cannot be transplanted
-  verbatim, and three constructions of implied volatility.
-- **[NOTES.md](NOTES.md)**: empirical results in full, and every place the
-  live APIs differed from their documentation (including a 100x scaling trap
-  in Kalshi's historical candlesticks).
+  wrong coordinate, the variance-budget identity, the three-layer hierarchy
+  of admissible models, and why an equity-style Heston model cannot be
+  transplanted verbatim.
+- **[NOTES.md](NOTES.md)**: results in full, and every place the live APIs
+  differed from their documentation (a 100x scaling trap in Kalshi's
+  historical candlesticks, start-stamped daily candles, a truncating
+  Polymarket history endpoint, and more).
 
-## The walk is not free: three structural constraints
+Every number quoted below is registered in `check_docs.py`, which recomputes
+it from `results_v2/` and fails on mismatch; `python run_all.py` reproduces
+the whole build in order.
+
+## Arc 1: what process is the price?
+
+### Three structural constraints
 
 1. **Log returns explode.** Near p = 0 log returns blow up; near p = 1 they
    compress to nothing. The natural increment is the price difference dp.
@@ -32,7 +51,7 @@ Companion documents:
    pinned at 0.98 must barely move. Calendar-time vol models (GARCH etc.)
    have no mechanism for either.
 
-## The variance budget: each market quotes its own implied variance
+### The variance budget: each market quotes its own implied variance
 
 For any martingale absorbed at 0/1, squared increments telescope into the
 variance of the terminal Bernoulli outcome:
@@ -44,28 +63,27 @@ E[ sum_t dp_t^2 + (final - p_last)^2 ] = p0 (1 - p0)
 This is model-free: it holds under stochastic vol, jumps, staleness, any
 dynamics at all. `p(1-p)` is the market's own model-free implied integrated
 variance, the exact analog of a variance-swap strike, quoted by the price
-itself. Comparing realised lifetime variance to it is a realised-vs-implied
-comparison; the figure plots the ratio of sums per starting-price bucket
-(a pooled slope compresses the same information into one number and hides
-where the excess lives).
+itself. Comparing realized lifetime variance to it is a realized-vs-implied
+comparison, bucketed by starting price so the excess cannot hide in a pooled
+slope:
 
 ![budget](figures/budget.png)
 
-| venue | resolved markets | slope | reading |
+| venue | resolved markets | pooled slope | reading |
 |---|---|---|---|
-| Polymarket | 290 | **1.33** | ~33% excess movement, mostly informational |
-| Kalshi | 12,731 | **2.41** | ~2-3x excess in the bulk, ~12x at extreme p, mostly microstructural |
+| Polymarket | 3,382 | **1.19** | ~19% excess movement, roughly uniform in p |
+| Kalshi | 27,465 | **1.43** | bulk 1.2-1.6x; extreme-p buckets 7.4x and 12.9x |
 
-A calibrated simulator (latent-Gaussian truth with noise/staleness/stochvol
-knobs) provides the benchmarks: a clean martingale gives slope ~1.0, additive
-bid-ask noise of 2 cents alone pushes it to 1.8 (the grey series in the
-figure), and staleness leaves it unbiased. Kalshi sits above the pure-bounce
-benchmark in every bucket, and the extreme-p buckets exceed what 2 cents of
-noise alone produces. Kalshi's gap matches the noise signature (signed z-ACF lag-1 of
--0.27 vs -0.28 in the sim); Polymarket's does not (-0.09), so its excess is
-behavioral/informational, the Augenblick-Rabin excess-movement effect.
+The calibrated simulator (latent-Gaussian truth with noise/staleness/
+stochvol knobs) provides benchmarks: a clean martingale gives slope 0.99,
+2 cents of additive bid-ask noise pushes it to 1.21, and staleness leaves it
+unbiased. The signed z-ACF separates the mechanisms: Kalshi's lag-1
+autocorrelation of standardized moves is -0.280, the classic bounce
+signature (the noise sim gives -0.195); Polymarket's is -0.115. Squared
+standardized moves cluster on both venues (lag-1 lambda-ACF +0.19 and
++0.22): a genuine stochastic-vol layer on top of whatever the local law is.
 
-## Which coordinate makes it a clean walk?
+### Which coordinate makes it a clean walk?
 
 Black-Scholes is really a choice of coordinate: log-price is the scale on
 which equity increments are homoskedastic. The same move exists on [0,1].
@@ -79,291 +97,217 @@ function are the same choice:
 | [p(1-p)]^2 | logit(p) | log-odds Brownian motion |
 | phi(Phi^-1(p))^2 | probit(p) | latent Gaussian signal |
 
-(The transform must stretch the boundaries to infinity; anything with a
-finite derivative at 0 and 1, e.g. arctan, fixes nothing.) Fitting the power
-family `E[dp^2/dt] = c [p(1-p)]^gamma / tau^alpha` asks the data directly
-which walk it is:
+Fitting the power family `E[dp^2/dt] = c [p(1-p)]^gamma / tau^alpha` on
+(p, tau) cell means asks the data which walk it is:
 
 ![state dependence](figures/state_dependence.png)
 
 | sample | gamma | alpha | reading |
 |---|---|---|---|
-| sim, clean probit truth | 1.64 | 1.02 | recovers the generating model |
-| sim, 2c additive noise | 0.68 | 0.32 | noise flattens both exponents |
-| polymarket bulk | **1.95** | **0.84** | **log-odds Brownian motion on a resolution-scaled clock** |
-| kalshi bulk | 0.81 | 0.40 | bounce-flattened, matching the noise sim |
+| sim, clean probit truth | 1.57 | 1.00 | recovers the generating model |
+| sim, 2c additive noise | 1.11 | 0.82 | noise drags both exponents down |
+| polymarket bulk | **1.51** | **0.53** | between angular and logit; clock slower than 1/tau |
+| kalshi bulk | 1.03 | 0.51 | dragged toward gamma = 1, the bounce direction |
 
-This is the headline: Polymarket's bulk is strikingly close to logit-Brownian
-motion with information flowing on the resolution clock. Kalshi is the same
-object buried under bid-ask bounce; its exponents are dragged toward zero
-exactly the way simulated state-independent noise drags them.
+Polymarket's level exponent sits between the Wright-Fisher and logit scales,
+close to the probit walk's effective exponent; Kalshi's is pulled toward 1
+exactly the way simulated state-independent noise pulls it. Both venues run
+their clock at roughly `tau^-0.5`, slower than the `1/tau` a
+constant-information-rate model implies: information arrives front-loaded
+relative to the resolution clock. (An earlier 290-market Polymarket
+vintage put gamma at 1.95 and read it as log-odds Brownian motion; the
+full-universe estimate walks that back.)
 
-## Where the diffusion picture breaks
+### The regime map: no single model covers the plane
 
-Three independent hourly-bar instruments (quote-vs-trade RV, Roll
-autocovariance, bipower variation on midpoints) decompose the walk:
+Per-cell diagnostics (excess stillness beyond what tick-censored diffusion
+predicts, bipower jump share, kurtosis of standardized moves) classify each
+(price bucket, tau band) cell:
 
-![intraday](figures/intraday.png)
+![regimes](figures/regimes.png)
 
-- Roughly **half of Kalshi's hourly trade-price variance is bid-ask bounce**;
-  the signature ratio RV(1h)/RV(1d) has median 3.5.
-- **Jumps carry 34-69% of the bounce-free variance**, peaking in the
-  0.45-0.55 bucket: coin-flip markets move by discrete news arrivals, not
-  diffusion. Excess kurtosis of standardised moves reaches several hundred
-  near the boundaries; longshots sit still and then gap.
-- Lambda-ACFs (squared standardised moves) are positive and decaying on both
-  venues: genuine information-flow clustering, a real stochastic-vol layer.
+- **R1 diffusive**: the SLV core, where the probit walk holds
+  (61% of Polymarket's variance budget, 83% of Kalshi's);
+- **R2 itm/hazard**: decided-but-unresolved markets near a boundary, frozen
+  prices punctuated by gaps (the credit analogy: jump-back-to-life risk);
+- **R3 jumpy**: extreme kurtosis, mostly the endgame as tau -> 0. The
+  endgame acceleration is size-driven on both venues, but the p(1-p)
+  dependence lives in move size on Polymarket (total exponent 1.51) and in
+  arrival frequency on Kalshi (0.61).
+
+### The SLV core, and how the tick grid rescued it
 
 The budget fixes total variance and the boundary pins the local factor, so
 any admissible stochastic-vol model is forced into a stochastic-local-vol
-form: `Var(dp) = phi(Phi^-1(p))^2 * lambda_t dt`, with all the Heston-style
-dynamics living in the information-flow intensity lambda_t. A verbatim
-Heston (free long-run variance, level-independent) violates the budget and
-leaks probability out of [0,1]; see THEORY.md for the argument.
+form: `Var(dp) = c * phi(Phi^-1(p))^2 * lambda_t / tau^alpha`, with all the
+Heston-style dynamics living in the information-flow intensity lambda_t
+(log-AR(1) here, fitted by a collapsed-mixture Kalman filter). Dropping the
+stochastic-vol layer costs 0.65 (PM) and 0.62 (Kalshi) nats/obs: intensity
+clustering is the single most important ingredient.
 
-## Implied volatility, three ways
+Fitted on a continuous observation model, though, the intensity mixing
+spread runs to any bound it is given: the Gaussian layer can only buy the
+data's many exact-zero days by making vol-of-vol huge. The fix is to put the
+observation where the data lives, on the venue tick grid, with an explicit
+staleness point-mass:
 
-1. **p(1-p)** is a model-free implied integrated variance per market.
-2. **lambda_imp = local dp^2 / [phi(Phi^-1(p))^2/tau]** strips the mechanical
-   (p, tau) state-dependence the way BS-IV strips moneyness/maturity.
-3. **Strike strips.** Kalshi bracketed events (S&P in [a,b], CPI above x) are
-   digital-option strips: member prices at one instant are a full
-   risk-neutral distribution of the underlying, giving a genuinely
-   forward-looking IV.
+- **Polymarket**: a zero-inflated tick layer (pi0 = 0.28 of daily
+  observations are stale repeats) brings the spread interior (s = 2.10) and
+  is decisively preferred (+0.27 nats/obs). Staleness was the missing mass.
+- **Kalshi**: tick censoring alone does it (s = 2.56 interior with
+  pi0 ~ 0); one-cent rounding already absorbs the zeros. Same symptom, two
+  venue-specific mechanisms, and the PIT histograms flatten on both.
 
-![strike strip IV](figures/strike_strip_iv.png)
+### Does it predict? The walk-forward horse race
 
-The strips validate against external markets: S&P end-of-year strips imply
-~17% annualised vol (VIX territory) and weekly 10Y Treasury strips imply
-~100bp/sqrt-yr normal vol (the swaption convention and level). The same
-quality gate that drops stale strips is what exposed the 100x scaling bug in
-Kalshi's historical bars (NOTES.md, API fix #13): an S&P strip that sums to
-0.011 instead of 1.000 is a very loud alarm.
+Train on the first 50% then 75% of markets by resolution date, test on the
+next block; every model is scored as log P(next tick move) on the venue tick
+grid, so continuous and discrete models compete in the same measure.
 
-## Modeling the three regimes
+![race](figures/race.png)
 
-> All phases (P0-P5) of the modeling phase are complete and oracle-gated:
-> each estimator is validated on simulated data with known parameters
-> before touching real data.
+- **The zero-inflated composite beats the plain composite on both venues**
+  (+0.069 PM, +0.076 Kalshi nats/obs, bootstrap CIs excluding zero): the
+  observation layer earns its keep out of sample.
+- **GARCH, the imported equity default, loses by 0.73 and 0.83 nats/obs.**
+  That gap is the quantitative price of ignoring the [0,1] geometry and the
+  resolution clock.
+- **The regime split is essential on Polymarket** (a single pooled SLV
+  degenerates and loses 4.10 nats/obs) **but not on Kalshi**, where one
+  global SLV wins outright (+0.21, ahead in every regime): with 8x more
+  markets per fit, the latent-intensity mixture spans the frozen and jumpy
+  cells on its own.
 
-The diagnostics above say no single model covers the (p, tau) plane, so the
-modeling phase starts by partitioning it. A per-cell regime map (excess
-stillness beyond what tick-censored diffusion predicts, bipower jump share,
-kurtosis of standardised moves) classifies every (price bucket, tau band)
-cell into:
+### Does it integrate? The budget consistency audit
 
-- **R1 diffusive**: the SLV core, where the probit walk holds;
-- **R2 itm/hazard**: decided-but-not-resolved markets near a boundary (and
-  Kalshi's dormant long-dated coin flips): frozen prices punctuated by gaps;
-- **R3 jumpy**: the endgame, extreme kurtosis as tau -> 0.
+One-step likelihood can flatter a model that compounds into nonsense, so the
+fitted composite is rolled forward by Monte Carlo from mid-life states and
+its remaining variance compared to the p(1-p) budget and to the realized
+continuation of the same markets:
 
-![regime classification](figures/regime_classification.png)
+![budget integration](figures/budget_v4.png)
 
-(The diagnostic panels behind the classification — excess stillness,
-bipower jump share, kurtosis per cell — are in
-[figures/regime_map.png](figures/regime_map.png).)
+Model engines land on the budget and near the realized ratios at every
+horizon (Polymarket 30d: model 1.16 vs realized 1.17; Kalshi 30d: model 1.38
+vs realized 1.60, the residual gap being Kalshi's longshot excess). An
+earlier vintage of the fit overshot 2-6x; the zero-inflated layer is what
+closed it, by removing the heavy intensity tail the Gaussian layer needed.
+Caveat: from these states nearly all remaining variance (99%+ of the ratio
+numerator) rides the jump/terminal channel, so this is an audit of totals,
+not of path texture. Of lifetime spend, the terminal resolution jump carries
+39% on Polymarket and only 4% on Kalshi, whose markets grind to their
+outcome through final-day trading instead of leaping there.
 
-| venue | R1 share of budget | R2 | R3 | R1 rectangle |
-|---|---|---|---|---|
-| Polymarket | 77% | 10% | 14% | p in [0.15, 0.95), tau >= 14d |
-| Kalshi | 56% | 12% | 32% | p in [0.15, 0.85), tau >= 1d |
+## Arc 2: two venues, one event
 
-Each regime then gets its own oracle-gated model:
+82 contract pairs listed on both venues (64 exact matches; the rest close
+but flagged): 47 Fed decision buckets, 14 Fed chair candidates, 8 monthly
+and 6 yearly BTC strikes, 7 election contracts. Matching the event turns
+every venue comparison into a controlled experiment.
 
-**R1 (core_slv.py)**: a stochastic-local-vol state space,
-`Var(dp) = c * phi(Phi^-1(p))^2 * lambda_t / tau^alpha` with log lambda
-AR(1), fitted by a collapsed mixture (IMM) Kalman filter with pooled
-hyperparameters across markets. Dropping the stochastic-vol layer costs
-0.56-0.69 nats/obs on both venues (LR p ~ 0): information-flow clustering
-is the single most important ingredient. Honest flag: the fitted mixing
-sd pins at its bound and the observation noise at its floor, and the PIT
-histogram is center-humped: real R1 data has more exact-zero days than a
-Gaussian layer can express, pointing at a zero-inflated observation layer
-as the next refinement.
+![bridge](figures/bridge.png)
 
-**R2 (itm_hazard.py)**: the credit analogy. On the venue tick grid,
-`P(k) = pi0 * 1{k=0} + diffusion + hazard * gap(k)` with a two-sided
-geometric gap and separate decay for away- vs toward-boundary moves.
-Near-boundary near-expiry Kalshi cells show a ~10%/day hazard of a
-~24-cent gap with 76% of gap mass jumping *away* from the boundary:
-jump-back-to-life risk, the analogue of jump-to-default. Dormant coin
-flips freeze the same way (pi0 ~ 0.4) but gap symmetrically.
+- **The venues disagree, persistently.** Mean absolute same-day gap is 2.4
+  cents (median 1.1c; 1.9c on exact pairs vs 3.6c on approximate ones), 8.6%
+  of pair-days differ by more than 5 cents, and the gap's within-pair AR(1)
+  of 0.86 implies a 4.6-day half-life. Whatever closes these gaps operates
+  on a timescale of days, not minutes.
+- **Kalshi's excess variance is a venue effect, not composition.** On
+  identical events Kalshi still spends 1.46x Polymarket's variance (Kalshi
+  higher on 72% of pairs). The venue-level budget difference survives the
+  strongest control available.
+- **The local law moves with the venue too, partly.** On the matched panel
+  Kalshi's level exponent rises to 1.34 (from 1.03 venue-wide) vs
+  Polymarket's 1.53: put the same events on both venues and the walks look
+  far more alike, with a residual bounce-flattening on Kalshi.
+- **Polymarket leads Kalshi.** On the hourly panel (198,224 aligned obs),
+  lagged Polymarket changes predict Kalshi changes with coefficient 0.24
+  (t = 58); the reverse coefficient is 0.02. Daily bars cannot settle this
+  direction question at all: Kalshi stamps daily candles at the window start
+  and Polymarket daily prices are midnight point samples, so same-label
+  closes are hours apart and naive daily alignment manufactures a spurious
+  lead (see NOTES.md).
 
-**R3 (endgame.py)**: as tau -> 0 the budget forces the remaining
-p(1-p) to be spent. Decomposing E[dp^2] = arrival rate x squared gap size
-(with tick-censoring corrected by per-cell truncated MLE) shows the
-endgame acceleration is **size-driven on both venues**: the tau exponent
-sits almost entirely in the gap-size channel (b_size 0.30-0.38 vs
-b_arr ~ 0.07). Late-life variance blowup means bigger moves, not more
-frequent ones. The venues differ in where the p(1-p) dependence lives:
-Polymarket in move size, Kalshi in arrival frequency. Model-free spend
-profile: 21-27% of lifetime variance is spent in the final 30 days, and
-the terminal resolution jump alone carries 10-14%.
+## What "implied volatility" can mean here
 
-### Does it predict? The out-of-sample horse race (horse_race.py)
+- `p(1-p)` is a genuine model-free implied integrated variance, quoted by
+  the price itself: the variance-swap strike of the market.
+- The filtered intensity lambda_t is **not** an implied vol, and this repo
+  does not call it one. Black-Scholes IV exists because two instruments (an
+  option and its underlying) are priced on one filtration; a filtered
+  intensity comes from one instrument's own realized path and is
+  backward-looking.
+- Genuinely forward-looking IVs need a second instrument: strike strips
+  (bracketed events are digital-option strips whose cross-section is a
+  risk-neutral distribution) and calendar pairs (by-T1 vs by-T2 contracts
+  imply a hazard rate). A v1-vintage strike-strip construction validated
+  against external markets (S&P strips at ~17% annualized vol, 10Y Treasury
+  strips at ~100bp normal vol); see NOTES.md. Building these out on the v2
+  vintage is the natural next layer.
 
-Walk-forward by resolution date (train on the first 50% then 75% of
-markets to resolve, test on the next 25% block), every model scored as
-log P(next tick move) on the venue tick grid, so continuous and discrete
-models compete in the same measure.
-
-![horse race](figures/horse_race.png)
-
-Mean log score per observation (higher is better; deltas vs composite
-carry 95% block-bootstrap CIs over test markets, all excluding zero):
-
-| model | Polymarket (24.5k obs) | Kalshi (285k obs) |
-|---|---|---|
-| composite (regime-split) | **-2.489** | -2.140 |
-| global SLV (no regimes) | -6.760 | **-2.119** |
-| GARCH(1,1) on dp | -2.839 | -3.005 |
-| bucket (memorised cell variance) | -3.391 | -3.129 |
-| constant-lambda SLV | -3.872 | -2.672 |
-
-Three findings:
-
-1. **The SLV structure beats every off-the-shelf baseline out of
-   sample.** GARCH, the imported equity default, loses by 0.35 (PM) and
-   0.87 (Kalshi) nats per observation; it captures vol clustering but has
-   no level dependence and no resolution clock. That gap is the
-   quantitative price of ignoring the [0,1] geometry.
-2. **The regime split is essential on the small venue.** On Polymarket a
-   single SLV fit over all cells degenerates (the frozen and jumpy cells
-   poison the pooled fit) and loses catastrophically; the composite wins
-   in every regime.
-3. **On the large venue one SLV nearly suffices.** On Kalshi the global
-   SLV edges the composite by 0.020 nats/obs, won in the R2 cells: the
-   latent-intensity mixture, with its mixing spread pinned at the bound,
-   imitates frozen-then-burst dynamics better than static per-cell tick
-   mixtures. The regime map still earns its keep as measurement (the
-   R2/R3 structure is real), but as *prediction* the SLV's intensity
-   layer already spans it. The composite's randomised PIT on Kalshi is
-   near-flat (deciles 0.083-0.110).
-
-### Does it integrate? The budget consistency check (budget_forecast.py)
-
-The horse race scores one-step densities; the budget identity constrains
-the whole remaining path: from any state, expected remaining variance
-(including the terminal resolution jump) must equal p(1-p). The check
-rolls the *fitted generative composite* forward by Monte Carlo from
-mid-life states (starts nearest tau = 30/14/7/3 days, p0 in [0.05, 0.95],
-200 paths each, R1 cells stepping the SLV probit walk with the log-lambda
-AR(1), R2/R3 cells sampling the fitted tick mixtures, terminal resolution
-contributing its exact p_T(1-p_T)) and compares simulated remaining
-variance to the budget, next to the realized continuation of the same
-markets (full per-band numbers in NOTES.md; per-start rows in results/):
-
-![budget forecast](figures/budget_forecast.png)
-
-1. **The checker is validated**: on simulated markets the realized ratio
-   is ~1 at every horizon, as the budget theorem requires.
-2. **Real markets overspend the budget from mid-life states too** (PM
-   1.36, Kalshi 1.70 at 30 days, decaying toward 1 as tau shrinks), the
-   conditional version of the lifetime excess-movement finding above.
-3. **The likelihood-optimal fit does not integrate.** The full SLV
-   composite overshoots the budget 2-6x, growing with horizon, while the
-   constant-lambda control (same MC, intensity frozen at its mean) lands
-   near the realized ratios; on Kalshi it nearly matches them. The
-   overspend is therefore specifically the fitted intensity tail: the
-   mixing spread pinned at its bound wins one-step likelihood (it is how
-   the Gaussian layer buys exact-zero days) but compounds into far too
-   much unconditional variance. One-step density and integrated dynamics
-   disagree, and this is the quantitative case for the zero-inflated
-   observation layer flagged in P1: stillness should be a point mass,
-   not a heavy intensity tail.
-4. **The variance flows through the right channel.** Splitting moves at
-   2 cents, model and realized agree that essentially all remaining
-   variance from these states rides the jump channel (shares 0.99+ both),
-   dominated by the terminal resolution jump.
-
-Caveat: the fits here are in-sample; this is a consistency audit of the
-fitted object, not a second forecast contest (that was P4).
-
-## Setup
+## Reproduction
 
 ```bash
 python -m venv .venv
 .venv/Scripts/python -m pip install -r requirements.txt   # Windows
+
+python run_all.py --list      # phases v1 (data pull) .. v6 (figures + doc check)
+python run_all.py             # rebuild everything, in order
+python run_all.py --only v2   # one phase
+
+python -m pytest tests -q     # oracle gates: every estimator must recover
+                              # known parameters on simulated data first
+python check_docs.py --strict # every number in this README, recomputed
 ```
 
-Python 3.11+. No API keys; both venues are read publicly.
-
-## Usage
-
-```bash
-# 1. build the universe (catalog of markets)
-python -m pmdata.cli universe --venue polymarket --closed --min-volume 100000
-python -m pmdata.cli universe --venue kalshi --status settled
-
-# 2. backfill bars (1d first; 1h/1m are much heavier)
-python -m pmdata.cli backfill --venue polymarket --freq 1d --limit 300
-python -m pmdata.cli backfill --venue kalshi --freq 1d
-
-# 3. inspect via DuckDB
-python -m pmdata.cli sql "select venue, freq, count(*) bars from bars group by 1,2"
-
-# 4. analysis
-python analysis/vol_check.py --simulate 600        # calibrated benchmark
-python analysis/vol_check.py --venue polymarket
-python analysis/vol_check.py --venue kalshi
-python analysis/intraday_decomp.py --venue kalshi  # bounce vs jumps (1h bars)
-python analysis/strike_strip.py --plot             # strike-strip IV
-python analysis/readme_figures.py                  # regenerate figures/
-
-# 5. modeling phase (each supports --oracle to validate on simulated truth)
-python analysis/regime_map.py --venue both         # P0: regime partition + figure
-python analysis/core_slv.py --venue both           # P1: R1 SLV state-space fit
-python analysis/itm_hazard.py --venue both         # P2: R2 frozen+gap mixture
-python analysis/endgame.py --venue both            # P3: arrival/size decomposition
-python analysis/horse_race.py --venue both         # P4: walk-forward horse race (heavy)
-python analysis/budget_forecast.py --venue both    # P5: budget consistency check
-
-# tests (parsers on captured fixtures + simulation-oracle analysis tests)
-python -m pytest tests -q
-```
+Python 3.11+. No API keys; both venues are read publicly. The full data
+pull (phase v1) takes several hours and lands in `data_v2/`; results and
+the frozen scalars live in `results_v2/` (committed, so the doc check runs
+without the raw data).
 
 ## Layout
 
 ```
-pmdata/config.py      endpoints, rate limits, FREQS, chunk sizes, paths
-pmdata/http.py        shared Session: retries w/ backoff, token bucket, 404 -> None
-pmdata/store.py       parquet writers (incremental, dedupe), checkpoints,
-                      DuckDB `bars` + `catalog` views
-pmdata/polymarket.py  Gamma universe + CLOB prices-history -> resampled OHLC
-pmdata/kalshi.py      series/markets universe (live + historical tiers),
-                      candlesticks with tri-generation _num() parsing
-pmdata/cli.py         universe / backfill / update / sql
-analysis/vol_check.py       tests A/B, power fit, diagnostics, simulator
-analysis/intraday_decomp.py hourly bounce-vs-jump decomposition
-analysis/strike_strip.py    risk-neutral distributions from bracketed events
-analysis/regime_map.py      P0: (p, tau) regime partition R1/R2/R3
-analysis/core_slv.py        P1: R1 stochastic-local-vol state space (IMM filter)
-analysis/itm_hazard.py      P2: R2 frozen + hazard-gap tick mixture
-analysis/endgame.py         P3: R3 arrival x size power-law decomposition
-analysis/horse_race.py      P4: walk-forward composite-vs-baselines race
-analysis/budget_forecast.py P5: MC remaining variance vs the p(1-p) budget
-results/                    horse-race + budget-check per-observation scores
-tests/                parser fixtures + sim-oracle tests
-figures/              README figures (readme_figures.py output)
+analysis/config.py     the frozen vintage: every filter, floor, seed, path
+analysis/core.py       market loading, state grid, exact-martingale simulator
+analysis/empirics_v2.py   budget test, power family, ACF/kurtosis diagnostics
+analysis/regimes_v3.py    regime map, SLV state space (IMM filter),
+                          itm-hazard mixture, endgame decomposition
+analysis/race_v4.py       zero-inflated tick layer, walk-forward horse race,
+                          MC budget integration
+analysis/bridge_v5.py     cross-venue pair table, gap/budget/power/lead-lag
+analysis/figures_v6.py    every figure above, from results_v2/ only
+pull_v2.py             resumable two-venue pull (scan, bars, tags, verify)
+pull_v5_hourly.py      hourly top-up for the 82 bridge pairs
+run_all.py             one-command driver, phases v1-v6
+check_docs.py          claims registry: doc numbers recomputed or the build fails
+pmdata/                venue adapters (shared with the v1 build)
+tests/                 parser fixtures + simulation-oracle gates
+results_v2/, figures/  frozen outputs; figures/v1/ keeps the v1-vintage figures
 ```
 
-Data (not in the repo, ~300MB parquet) is rebuilt by the usage commands
-above; the wide Kalshi universe is a per-series scan of all annual,
-quarterly, monthly, and weekly series across both API tiers.
+The v1 exploration (a smaller vintage with intraday and strike-strip
+analyses not yet redone on v2) is retained under `analysis/vol_check.py` and
+friends; its findings are kept, clearly labeled, in NOTES.md.
 
 ## Honest limitations
 
-- 1-cent ticks floor measurable variance; extreme-p buckets are censored by
-  the grid as well as by jumps.
+- Ticks floor measurable variance; extreme-p buckets are censored by the
+  grid as well as by jumps. The zero-inflated layer models this at the
+  observation level but the budget ratios there remain partly mechanical.
 - Prices embed fees and any favorite-longshot premium; budget slopes mix
-  excess movement with risk-premium effects.
+  excess movement with risk-premium effects, most visibly in Kalshi's
+  extreme-p buckets.
+- Both universes are top-N by volume (4,000 PM / 50,000 Kalshi markets), so
+  conclusions are about liquid markets; the effective volume floors differ
+  from the v1 build, which shifts sample composition as well as adding data.
 - Resolution time is proxied by the last observed bar.
-- Polymarket bars are resampled from a single price series (no true OHLC,
-  no quotes); its intraday history survives only for recently closed markets.
-- Strike strips use daily closes across member markets, which need not be
-  simultaneous; the total-probability gate catches gross staleness only.
-- Strip IV near resolution is inflated by the strike grid: measurable std is
-  floored by the bin width, so the late uptick in the term structure is
-  partly discretisation, not volatility.
-- Annual index strips have only 3 resolved events; the IQR band there is
-  spread across calendar years, not sampling error.
+- Polymarket's history endpoint truncates at a market's end date: prices
+  set between the scheduled end and actual resolution (the 2024 election
+  night jump, for instance) never appear. This inflates election-domain
+  gaps in Arc 2 and is flagged where it bites.
+- 18 of the 82 bridge pairs are approximate matches (bucket-lumped Fed
+  hikes, party-vs-candidate mayoral contracts, different BTC listing dates);
+  they are flagged and their gap stats reported separately.
+- The budget-integration audit is in-sample by design: a consistency check
+  of the fitted object, not a second forecast contest.
