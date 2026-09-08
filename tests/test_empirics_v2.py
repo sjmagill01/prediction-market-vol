@@ -49,9 +49,15 @@ def test_budget_stochvol_kept(stochvol):
 
 
 def test_gauss_rate_is_the_right_one(clean):
-    slopes, _ = local_rates(move_panel(clean))
+    slopes, buckets = local_rates(move_panel(clean))
     assert 0.90 <= slopes["v_gauss"]["slope"] <= 1.15
     assert slopes["v_binom"]["slope"] < 0.80
+    # clustered-bootstrap CIs bracket the point ratio, and the clean-sim
+    # band covers 1 in the bulk (the rate is exact there by construction)
+    assert (buckets["ci_lo"] <= buckets["ratio_gauss"] + 1e-9).all()
+    assert (buckets["ci_hi"] >= buckets["ratio_gauss"] - 1e-9).all()
+    bulk = buckets.iloc[2:-2]
+    assert ((bulk["ci_lo"] <= 1.0) & (bulk["ci_hi"] >= 1.0)).mean() >= 0.7
 
 
 def test_power_fit_tau_clock(clean):

@@ -566,6 +566,42 @@ for _venue, _part, _q in [("polymarket", "global", 1.616),
         _jscalar(f"cluster65_scalars_{_venue}.json",
                  ("slv_gate", _part, "heldout_ll_per_obs")), _q, 0.0005))
 
+# ---- V6.6 local-rate CI pass (market-clustered bootstrap, run 2026-09-08):
+# numbers quoted in the NOTES crossing-pattern paragraph.
+for _lbl, _f, _bucket, _field, _q, _tol in [
+    ("V6.6 PM mid min ratio", "polymarket", "[0.55,0.70)",
+     "ratio_gauss", 0.39, 0.005),
+    ("V6.6 PM mid max ratio", "polymarket", "[0.15,0.30)",
+     "ratio_gauss", 0.66, 0.005),
+    ("V6.6 Kalshi mid min ratio", "kalshi", "[0.55,0.70)",
+     "ratio_gauss", 0.84, 0.005),
+    ("V6.6 Kalshi mid max ratio", "kalshi", "[0.70,0.85)",
+     "ratio_gauss", 1.31, 0.005),
+    ("V6.6 PM longshot edge ratio", "polymarket", "[0.00,0.05)",
+     "ratio_gauss", 3.32, 0.005),
+    ("V6.6 PM favorite edge ratio", "polymarket", "[0.95,1.00)",
+     "ratio_gauss", 5.27, 0.005),
+    ("V6.6 Kalshi longshot edge ratio", "kalshi", "[0.00,0.05)",
+     "ratio_gauss", 9.90, 0.005),
+    ("V6.6 Kalshi favorite edge ratio", "kalshi", "[0.95,1.00)",
+     "ratio_gauss", 13.93, 0.005),
+    ("V6.6 sim clean favorite edge ratio", "sim_clean", "[0.95,1.00)",
+     "ratio_gauss", 1.40, 0.005),
+    ("V6.6 sim clean longshot edge ratio", "sim_clean", "[0.00,0.05)",
+     "ratio_gauss", 1.48, 0.005),
+    ("V6.6 PM favorite ci lo", "polymarket", "[0.95,1.00)",
+     "ci_lo", 2.59, 0.005),
+    ("V6.6 PM favorite ci hi", "polymarket", "[0.95,1.00)",
+     "ci_hi", 8.89, 0.005),
+    ("V6.6 sim noise favorite ci hi", "sim_noise", "[0.95,1.00)",
+     "ci_hi", 2.88, 0.005),
+    ("V6.6 PM favorite bucket n", "polymarket", "[0.95,1.00)",
+     "n", 2243, 0),
+]:
+    CLAIMS.append(Claim(
+        _lbl, _csv(f"empirics_local_{_f}.csv", {"bucket": _bucket}, _field),
+        _q, _tol))
+
 
 def main() -> int:
     strict = "--strict" in sys.argv

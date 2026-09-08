@@ -79,6 +79,9 @@ def fig_state_dependence() -> None:
         if s.startswith("sim"):
             style.update(lw=1.2, ls="--", marker=None)
         ax1.plot(x, df.ratio_gauss, label=LBL[s], **style)
+        # 95% market-clustered bootstrap band
+        ax1.fill_between(x, df.ci_lo, df.ci_hi, color=C[s], alpha=0.15,
+                         lw=0)
     ax1.axhline(1.0, color="k", lw=0.8, ls=":")
     ax1.set_yscale("log")
     ax1.set_xlabel("price bucket (midpoint)")

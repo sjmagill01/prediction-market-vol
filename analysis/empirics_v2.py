@@ -116,12 +116,14 @@ def budget(mkts: list[Market], seed: int = SEED) -> tuple[dict, pd.DataFrame]:
 
 
 # ------------------------------------------------------------------ block B
-def local_rates(pan: pd.DataFrame) -> tuple[dict, pd.DataFrame]:
+def local_rates(pan: pd.DataFrame,
+                seed: int = SEED) -> tuple[dict, pd.DataFrame]:
     y = pan["dp2"].to_numpy()
     slopes = {}
     for name in ("v_binom", "v_gauss", "v_wf"):
         b, se = origin_slope(pan[name].to_numpy(), y)
         slopes[name] = {"slope": b, "se": se}
+    rng = np.random.default_rng(seed)
     rows = []
     for b, g in pan.groupby(bucket(pan["p"].to_numpy())):
         row = {"bucket": bucket_label(int(b)), "n": len(g)}
@@ -130,6 +132,14 @@ def local_rates(pan: pd.DataFrame) -> tuple[dict, pd.DataFrame]:
             denom = g[name].mean() * scale
             row[f"ratio_{name[2:]}"] = g["dp2"].mean() / denom \
                 if denom > 0 else np.nan
+        # market-clustered bootstrap CI for the gauss ratio (moves within a
+        # market are dependent, so resample markets, not moves)
+        agg = g.groupby("key")[["dp2", "v_gauss"]].sum()
+        yk, vk = agg["dp2"].to_numpy(), agg["v_gauss"].to_numpy()
+        idx = rng.integers(0, len(yk), (N_BOOT, len(yk)))
+        boots = yk[idx].sum(1) / np.maximum(vk[idx].sum(1), 1e-300)
+        lo, hi = np.quantile(boots, [0.025, 0.975])
+        row["ci_lo"], row["ci_hi"] = float(lo), float(hi)
         rows.append(row)
     return slopes, pd.DataFrame(rows)
 

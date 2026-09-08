@@ -152,6 +152,23 @@ run 1.2-1.6x in the bulk but **7.37** at [0, 0.05) and **12.91** at
 exceeds the 2c-noise sim benchmark (-0.195): strong bid-ask bounce on top
 of jump-dominated boundary behavior.
 
+The local-rate panel (realized over probit-predicted variance by price
+bucket, now with 95% market-clustered bootstrap bands) shows the venues
+*cross* the sims rather than sit above them. Polymarket's mid-price
+buckets ([0.15, 0.85)) run **0.39-0.66**, below even the clean sim: the
+staleness mass (zi pi0 = 0.284) suppresses realized dp^2 while the probit
+denominator keeps ticking. Kalshi's mid buckets sit at 0.84-1.31,
+consistent with its near-zero staleness. Both venues blow out at the edge
+buckets (PM **3.32** / **5.27**, Kalshi **9.90** / **13.93**), where R2
+hazard gaps and jumps do not scale with the diffusive rate and the
+phi(Phi^-1(p))^2 denominator collapses; even the clean sim lifts to
+1.40-1.48 there, so part of the edge excess is mechanical. The bands make
+one distinction honest: Kalshi's edge excess is decisively separated from
+every sim, but Polymarket's extreme-favorite bucket ([0.95, 1.00),
+n = 2,243) has band [2.59, 8.89], reaching down to the 2c-noise sim's
+upper edge (2.88): PM's favorite-side excess is not cleanly distinguished
+from additive noise.
+
 ### Power-family fit: which [0,1] coordinate
 
 `E[dp^2/dt] = c [p(1-p)]^gamma / tau^alpha` on (p, tau) cell means, bulk =
